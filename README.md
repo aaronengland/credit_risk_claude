@@ -75,6 +75,20 @@ All variables use a type prefix convention:
 | `dict_` | dictionary |
 | `tpl_` | tuple |
 
+## S3 Data Convention
+
+Data flows through S3 using a consistent path structure:
+
+```
+s3://{bucket}/00_data_collection/data.csv   # raw source data
+s3://{bucket}/01_eda/data.csv               # after EDA
+s3://{bucket}/02_data_split/                # train/test/validation splits
+s3://{bucket}/03_preprocessing/             # preprocessed features
+s3://{bucket}/04_model/                     # trained model artifacts
+```
+
+The bucket name is derived from the repository directory name with underscores replaced by hyphens (e.g., `credit_risk_claude` becomes `credit-risk-claude`).
+
 ## Tech Stack
 
 - **Language:** Python 3.11+
