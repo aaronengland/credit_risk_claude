@@ -6,29 +6,97 @@ user_invocable: true
 
 # Disparate Impact
 
-Populate the `06_disparate_impact/notebook.ipynb` with fair lending disparate impact analysis on the test set.
+Populate the `06_disparate_impact/notebook.ipynb` with fair lending disparate impact analysis on the test set only.
 
 ## Instructions
 
 Edit the existing `06_disparate_impact/notebook.ipynb`. All variable names must use type prefixes. All markdown headers use `####`. All plots saved to `output/`. Each function in its own code cell. Legend placement: `loc='lower right'`.
 
-### Analysis Overview
+### Imports Cell
 
-Compare model performance and prediction distributions between age < 60 and age >= 60 on the test set only. Age is a protected class under ECOA.
+```python
+import os
+import warnings
+import boto3
+import joblib
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import shap
+import xgboost as xgb
+from sklearn.metrics import roc_auc_score
+from scipy.stats import ks_2samp
+```
 
-### Functions
+### Functions Cell
 
-1. `compute_metrics_by_group(df_data, str_group_col, str_pred_col, str_target)` - Returns DataFrame with per-group: int_n, flt_target_mean, flt_pred_mean, flt_pred_median, flt_auc.
+One function per code cell, ordered to match execution order.
+
+1. `compute_metrics_by_group(df_data, str_group_col, str_pred_col, str_target)` - Returns DataFrame with per-group: str_group, int_n, flt_target_mean, flt_pred_mean, flt_pred_median, flt_auc.
 
 2. `plot_kde_by_group(df_data, str_group_col, str_pred_col, str_filename)` - KDE of predictions by group with median in legend. Colors: steelblue, salmon.
 
 3. `plot_metric_comparison(df_metrics, str_metric, str_title, str_filename)` - Bar chart comparing a metric across groups with values annotated. Y-axis padded.
 
-### Analysis Sections
+4. `plot_age_vs_credit_importance(model_age, model_credit, arr_X_age, arr_X_credit, list_cols, str_filename)` - Grouped horizontal bar chart comparing SHAP importance from the age proxy model (salmon) vs the credit risk model (steelblue). Both normalized to 0-1, sorted by age SHAP. Highlights features that are important for both predicting age and default.
 
-- Read test data and model from 04_model/output/
-- Create age group column (< 60 vs >= 60)
-- Metrics summary table by group, saved to CSV
-- Bar charts: mean predicted probability, actual default rate, AUC by group
-- KDE of predictions by age group
-- KS test between age groups (statistic and p-value)
+5. `plot_age_shap_pdp(model_age, arr_X, list_cols, str_filename)` - Grid of SHAP partial dependence scatter plots from the age proxy model. 3-column layout, salmon color. Shows each feature's relationship with age group prediction.
+
+### Constants Cell
+
+```python
+# bucket, step
+# s3 input: s3://{str_bucket}/03_preprocessing
+# target: default_12m
+# model path: ../04_model/output/xgboost_model.joblib
+# feature cols path: ../04_model/output/feature_cols.joblib
+# age column: int_age
+# age threshold: 60
+# output directory
+```
+
+### Analysis Section
+
+#### Read Data and Model
+- Read test data only from S3 parquet
+- Load credit risk model and feature columns from 04_model/output/
+
+#### Define Age Groups
+Markdown: ECOA context, int_age excluded from model features but must verify no disparate outcomes.
+- Generate credit risk predictions on test set
+- Create `str_age_group` column (< 60 vs >= 60)
+
+#### Metrics by Age Group
+Markdown: explains comparison of metrics between groups.
+- `compute_metrics_by_group`, save to `output/disparate_impact_metrics.csv`
+
+#### Mean Predicted Probability by Age Group
+- `plot_metric_comparison` for flt_pred_mean
+
+#### Actual Default Rate by Age Group
+- `plot_metric_comparison` for flt_target_mean
+
+#### AUC by Age Group
+- `plot_metric_comparison` for flt_auc
+
+#### KDE of Predictions by Age Group
+Markdown: similar distributions suggest comparable treatment.
+- `plot_kde_by_group`
+
+#### KS Test
+Markdown: formal statistical test for distributional differences.
+- KS test between age group predictions, print statistic and p-value
+
+#### Age Proxy Model
+Markdown: train XGBoost to predict age group using credit model features to identify proxy variables.
+- Quick XGBoost (100 trees, depth 4) to predict age group
+- Print proxy model AUC
+
+#### Age Proxy vs Credit Risk Feature Importance
+Markdown: features important for both age and default prediction are proxy concerns.
+- `plot_age_vs_credit_importance` comparing SHAP from both models
+
+#### Age Proxy SHAP Partial Dependence Plots
+Markdown: reveals direction/shape of each feature's relationship with age.
+- `plot_age_shap_pdp` on test set features
