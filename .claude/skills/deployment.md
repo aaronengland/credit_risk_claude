@@ -10,37 +10,62 @@ Populate the `api/notebook.ipynb` with code to create all API artifacts via `%%w
 
 ## Instructions
 
-Edit the existing `api/notebook.ipynb`. All variable names must use type prefixes. All markdown headers use `####`. Each function in its own code cell.
+Edit the existing `api/notebook.ipynb`. All variable names must use type prefixes. All markdown headers use `####`. No Functions section needed for this notebook.
 
-### Flow
+### Imports Cell
 
-1. Copy model artifacts (preprocessing pipeline, model, feature cols) into api/ for Docker build context
-2. `%%writefile requirements.txt` - Python dependencies
-3. `%%writefile app.py` - FastAPI application
-4. `%%writefile Dockerfile` - Docker image definition
-5. Build Docker image
-6. Clean up copied artifacts with `os.remove()`
+```python
+import os
+import shutil
+```
 
-### app.py Structure
+### Constants Cell
 
-- Load preprocessing pipeline, XGBoost model, and feature column list at startup
-- Define Pydantic request schema (`LoanApplication`) matching the raw input columns
-- Define response schema (`PredictionResponse`) with `flt_probability_of_default`
-- `/health` GET endpoint for health checks
-- `/predict` POST endpoint that:
-  - Converts input to DataFrame
-  - Runs through preprocessing pipeline
-  - Selects model features
-  - Returns predicted probability of default
+```python
+# bucket, step
+# artifact source paths:
+#   ../03_preprocessing/output/preprocessing_pipeline.joblib
+#   ../04_model/output/xgboost_model.joblib
+#   ../04_model/output/feature_cols.joblib
+# docker image name: str_bucket
+# output directory
+```
 
-### Dockerfile
+### Analysis Sections
 
+#### Copy Model Artifacts
+Markdown: explains copying artifacts into build context.
+- `shutil.copy2` for preprocessing_pipeline.joblib, xgboost_model.joblib, feature_cols.joblib
+
+#### requirements.txt
+- `%%writefile requirements.txt` with fastapi, uvicorn, pandas, numpy, scikit-learn, xgboost, joblib
+
+#### app.py
+Markdown: explains the FastAPI application structure.
+- `%%writefile app.py` with:
+  - Structured logging (timestamp | level | message format)
+  - Logs artifact loading at startup with feature count
+  - Logs each prediction request with loan_id, PD, and elapsed time
+  - Logs health check requests
+  - Load preprocessing pipeline, XGBoost model, feature column list at startup
+  - Pydantic `LoanApplication` request schema matching raw input columns (Optional for nullable fields)
+  - Pydantic `PredictionResponse` with `flt_probability_of_default`
+  - `/health` GET endpoint
+  - `/predict` POST endpoint: converts to DataFrame, runs pipeline.transform, selects model features, returns predicted PD
+
+#### Dockerfile
+- `%%writefile Dockerfile`
 - Base: `python:3.11-slim`
+- WORKDIR /app
 - Install requirements
-- Copy artifacts and app
+- Copy artifacts (pipeline, model, feature_cols) and app.py
 - Expose port 8080
-- Run uvicorn
+- CMD: uvicorn app:app --host 0.0.0.0 --port 8080
 
-### Clean Up
+#### Build Docker Image
+- `!docker build -t {str_image_name} .`
 
-After Docker build, remove the copied `.joblib` artifacts from the api/ directory using `os.remove()`. They are baked into the Docker image and no longer needed in the build context.
+#### Clean Up
+Markdown: explains artifacts are baked into Docker image and no longer needed.
+- `os.remove()` all artifacts: .joblib files, app.py, Dockerfile, requirements.txt
+- Use try/except FileNotFoundError for safety
