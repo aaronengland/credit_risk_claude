@@ -15,9 +15,11 @@ Create the complete folder structure for the credit risk modeling project. This 
    - `02_data_split/`
    - `03_preprocessing/`
    - `04_model/`
-   - `05_deployment/`
+   - `05_model_eval/`
+   - `06_disparate_impact/`
+   - `api/`
 
-2. In each directory (01 through 04), create a `notebook.ipynb` file following the template structure from the root `notebook.ipynb`:
+2. In each directory (01 through 06), create a `notebook.ipynb` file following the template structure from the root `notebook.ipynb`:
    - Cell 1 (code): imports - only `import os` as the starting point
    - Cell 2 (markdown): `#### Functions`
    - Cell 3 (code): empty (placeholder for function definitions)
@@ -26,7 +28,7 @@ Create the complete folder structure for the credit risk modeling project. This 
    - Cell 6 (markdown): `#### Analysis`
    - Cell 7 (code): empty (placeholder for analysis)
 
-3. For `05_deployment/`, do NOT create a notebook. Instead create placeholder files:
+3. For `api/`, do NOT create a notebook. Instead create placeholder files:
    - `app.py` (empty, for FastAPI application)
    - `Dockerfile` (empty, for Docker image)
    - `requirements.txt` (empty, for dependencies)

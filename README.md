@@ -18,7 +18,11 @@ credit_risk_claude/
 │   └── notebook.ipynb
 ├── 04_model/                # XGBoost model training and evaluation
 │   └── notebook.ipynb
-├── 05_deployment/           # Model serving
+├── 05_model_eval/           # Model evaluation and performance metrics
+│   └── notebook.ipynb
+├── 06_disparate_impact/     # Fair lending and disparate impact analysis
+│   └── notebook.ipynb
+├── api/                     # Model serving
 │   ├── app.py               # FastAPI application
 │   ├── Dockerfile           # Docker image definition
 │   └── requirements.txt     # Python dependencies
@@ -35,8 +39,10 @@ credit_risk_claude/
 | 1 | `01_eda/` | Explore the dataset, examine distributions, identify missing values, and assess target variable balance |
 | 2 | `02_data_split/` | Split data into train, test, and validation sets with stratification on the target |
 | 3 | `03_preprocessing/` | Handle missing values, encode categorical features, and engineer new features |
-| 4 | `04_model/` | Train an XGBoost classifier, tune hyperparameters, and evaluate performance |
-| 5 | `05_deployment/` | Serve the trained model via FastAPI, packaged as a Docker image |
+| 4 | `04_model/` | Train an XGBoost classifier and tune hyperparameters |
+| 5 | `05_model_eval/` | Evaluate model performance across train, validation, and test sets |
+| 6 | `06_disparate_impact/` | Fair lending analysis and disparate impact testing |
+| 7 | `api/` | Serve the trained model via FastAPI, packaged as a Docker image |
 
 ## Claude Code Skills
 
@@ -49,6 +55,8 @@ This project uses Claude Code skills to automate each step of the modeling workf
 | `/data-split` | Populates the data split notebook |
 | `/preprocessing` | Populates the preprocessing notebook |
 | `/model` | Populates the model training notebook |
+| `/model-eval` | Populates the model evaluation notebook |
+| `/disparate-impact` | Populates the disparate impact analysis notebook |
 | `/deployment` | Creates the FastAPI app, Dockerfile, and requirements |
 | `/run-all` | Runs all skills sequentially |
 
@@ -81,7 +89,6 @@ Data flows through S3 using a consistent path structure:
 
 ```
 s3://{bucket}/00_data_collection/data.csv   # raw source data
-s3://{bucket}/01_eda/data.csv               # after EDA
 s3://{bucket}/02_data_split/                # train/test/validation splits
 s3://{bucket}/03_preprocessing/             # preprocessed features
 s3://{bucket}/04_model/                     # trained model artifacts

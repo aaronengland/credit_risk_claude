@@ -10,7 +10,7 @@ Populate the `01_eda/notebook.ipynb` with exploratory data analysis code for cre
 
 ## Instructions
 
-Edit the existing `01_eda/notebook.ipynb`, preserving the template structure (imports, functions, constants, analysis). All variable names must use type prefixes (str_, flt_, int_, df_, list_, dict_, tpl_, etc.). All markdown headers use `####`. All plots must be saved to the `output/` folder. The main DataFrame is always named `df`.
+Edit the existing `01_eda/notebook.ipynb`, preserving the template structure (imports, functions, constants, analysis). All variable names must use type prefixes (str_, flt_, int_, df_, list_, dict_, tpl_, etc.). All markdown headers use `####`. All plots must be saved to the `output/` folder. The main DataFrame is always named `df`. Each function must be in its own code cell.
 
 ### Imports Cell
 
@@ -25,7 +25,7 @@ import seaborn as sns
 
 ### Functions Cell
 
-Functions are ordered to match the order they are called in the analysis section. All variable names inside functions must also use type prefixes.
+One function per code cell, ordered to match execution order.
 
 1. `descriptive_statistics(df_data)` - Runs `df_data.select_dtypes(include=[np.number]).describe().T` with index reset and renamed to `str_column`. Adds:
    - `str_dtype` - data type of each column
@@ -106,4 +106,4 @@ Each step gets its own `####` markdown header cell followed by one or more code 
 
 - EDA does not save data to S3. It is purely for analysis and documentation (plots saved to `output/`).
 - The approach is always top-down: start with the big picture (shape, date range, target mean), then descriptive stats, then drill into types, missingness, target, distributions, and correlations.
-- `plot_data_types` and `plot_proportion_missing` take `df_desc` as input, not `df`. They derive their data from the descriptive statistics output.
+- `plot_data_types` and `plot_proportion_missing` take `df_desc` as input, not `df`.

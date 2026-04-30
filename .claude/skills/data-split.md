@@ -10,7 +10,7 @@ Populate the `02_data_split/notebook.ipynb` with out-of-time data splitting code
 
 ## Instructions
 
-Edit the existing `02_data_split/notebook.ipynb`, preserving the template structure (imports, functions, constants, analysis). All variable names must use type prefixes. All markdown headers use `####`. All plots must be saved to the `output/` folder. The main DataFrame is always named `df`.
+Edit the existing `02_data_split/notebook.ipynb`, preserving the template structure (imports, functions, constants, analysis). All variable names must use type prefixes. All markdown headers use `####`. All plots must be saved to the `output/` folder. The main DataFrame is always named `df`. Each function must be in its own code cell.
 
 ### Imports Cell
 
@@ -24,7 +24,18 @@ import matplotlib.pyplot as plt
 
 ### Functions Cell
 
-1. `plot_target_drift(df_train, df_valid, df_test, str_target, str_filename='output/target_drift.png')` - Bar chart showing the mean of the target in each dataset (train, validation, test). Annotate each bar with the mean value. Use `rot=0`. Pad y-axis so labels never clip.
+One function per code cell, ordered to match execution order.
+
+1. `plot_observations(df_train, df_valid, df_test, str_filename='output/observations_by_split.png')` - Bar chart showing the number of observations in each split with count and percent annotated on bars.
+
+2. `plot_target_drift(df_train, df_valid, df_test, str_target, str_filename='output/target_drift.png')` - Bar chart showing the mean of the target in each split with mean value annotated on bars.
+
+### Plot Rules (apply to ALL plotting functions)
+
+- Always pad the y-axis so bar labels never overlap with the plot boundary. Use `ax.set_ylim(top=ax.get_ylim()[1] * 1.15)`.
+- Do NOT rotate x-labels by default. Use `rot=0`.
+- Always use `plt.tight_layout()` before saving.
+- Always use `plt.savefig(str_filename, dpi=300)` then `plt.show()`.
 
 ### Constants Cell
 
@@ -67,8 +78,13 @@ os.makedirs('output', exist_ok=True)
 - Print shape
 
 #### Split Data
-- Use the sorted date order to split into `df_train` (first 70%), `df_valid` (next 15%), `df_test` (last 15%)
-- Print shape and date range for each split
+- Use sorted date order to compute split indices
+- `df_train` = first 70%, `df_valid` = next 15%, `df_test` = last 15%
+- Build `df_split_summary` DataFrame with columns: `str_split`, `int_n_rows`, `int_n_cols`, `str_date_min`, `str_date_max`, `flt_target_mean`
+- Save to `output/split_summary.csv` and display
+
+#### Observations by Split
+- `plot_observations(df_train, df_valid, df_test)`
 
 #### Target Drift
 - `plot_target_drift(df_train, df_valid, df_test, str_target)`
@@ -78,4 +94,3 @@ os.makedirs('output', exist_ok=True)
   - `s3://{str_bucket}/{str_step}/df_train.parquet`
   - `s3://{str_bucket}/{str_step}/df_valid.parquet`
   - `s3://{str_bucket}/{str_step}/df_test.parquet`
-- Print confirmation messages
