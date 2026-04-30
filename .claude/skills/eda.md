@@ -90,5 +90,4 @@ Each step gets its own `####` markdown header cell followed by one or more code 
 #### Correlation with Target
 - `plot_correlation_with_target(df, str_target)`
 
-#### Save
-- Save `df` to `s3://{str_bucket}/{str_step}/data.csv`
+Note: EDA does not save data to S3. It is purely for analysis and documentation (plots saved to `output/`).
