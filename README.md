@@ -52,12 +52,12 @@ This project includes an advisory panel of specialized Claude personas for criti
 
 | Member | Role | Focus Area |
 |--------|------|------------|
-| **Colby Wight** | Data Scientist | Feature engineering, data quality, implementation details |
-| **Cameron Marsden** | Senior Data Scientist | Validation methodology, statistical rigor, mentorship |
 | **Michael Francis** | SVP of Risk and Data Science | Regulatory compliance, model governance, business impact |
 | **John Candido** | Data Science Advisor | Strategic alignment, stakeholder communication, big-picture thinking |
-| **Aaron Hunsaker** | MLOps Engineer | Deployment, monitoring, infrastructure, operational reliability |
 | **Sean Seamonds** | Director of Data Engineering | Data pipelines, data quality, platform architecture |
+| **Aaron Hunsaker** | MLOps Engineer | Deployment, monitoring, infrastructure, operational reliability |
+| **Cameron Marsden** | Senior Data Scientist | Validation methodology, statistical rigor, mentorship |
+| **Colby Wight** | Data Scientist | Feature engineering, data quality, implementation details |
 
 Panel member profiles are stored in `advisory-panel/` and can be used to simulate stakeholder review, stress-test modeling decisions, or research new techniques.
 
