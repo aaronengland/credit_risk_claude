@@ -43,6 +43,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 - **Post-Deployment**
   - [8. Monitoring](#8-monitoring)
   - [9. Champion-Challenger](#9-champion-challenger)
+- [Advisory Panel Review (2026-05-01)](#advisory-panel-review-2026-05-01)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
 
