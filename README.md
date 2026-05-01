@@ -1,6 +1,15 @@
 <p align="center">
   <img src="img/Claude_AI_logo.svg.png" alt="Claude Logo" width="200"/>
 </p>
+<p align="center">
+  <img src="img/Python_logo_and_wordmark.svg.png" alt="Python" height="40"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="img/XGBoost_logo.svg" alt="XGBoost" height="40"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="img/Scikit_learn_logo_small.svg.png" alt="scikit-learn" height="40"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="img/Amazon_Web_Services_Logo.svg.png" alt="AWS" height="40"/>
+</p>
 
 # Credit Risk Model
 
