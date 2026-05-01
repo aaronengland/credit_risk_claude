@@ -35,12 +35,13 @@ One function per code cell, ordered to match execution order.
 ### Analysis Sections
 
 #### Read Data and Models
-- Read train and test clean data from S3
+- Read train, valid, and test clean data from S3
+- Combine train and valid into `df_train_valid` (the champion was trained on combined train+valid)
 - Load champion XGBoost model and feature columns
 
 #### Train Challenger Model
-Markdown: explains challenger is an untuned SVM with RBF kernel + StandardScaler pipeline, serving as a baseline comparison.
-- Train `Pipeline([StandardScaler, SVC(kernel='rbf', probability=True)])` on training data
+Markdown: explains challenger is an untuned SVM with RBF kernel + StandardScaler pipeline, serving as a baseline comparison. Trained on the same combined train+valid data as the champion for a fair comparison.
+- Train `Pipeline([StandardScaler, SVC(kernel='rbf', probability=True)])` on combined train+valid data
 
 #### Generate Predictions
 - Score both models on the same out-of-time test set

@@ -61,14 +61,15 @@ One function per code cell, ordered to match execution order.
 
 #### Read Data and Model
 - Read `df_train_clean`, `df_valid_clean`, `df_test_clean` from S3 parquet
+- Combine train and valid into `df_train_valid` (the model was trained on this combined set)
 - Load model and feature columns from `04_model/output/`
 
 #### Generate Predictions
-- Generate predicted probabilities for all three splits
-- Build `dict_splits` mapping split name to (arr_y_true, arr_y_pred) tuples
+- Generate predicted probabilities for train+valid (combined) and test
+- Build `dict_splits` mapping split name to (arr_y_true, arr_y_pred) tuples: `'Train+Valid'` and `'Test'`
 
 #### Metrics Summary
-Markdown: explains AUC, Gini, KS, PR AUC, Brier, median prediction.
+Markdown: explains AUC, Gini, KS, PR AUC, Brier, median prediction. Notes that the model was trained on combined train+valid data, so Train+Valid metrics reflect in-sample performance while Test is the true out-of-time holdout.
 - `compute_metrics` for each split
 - Build `df_metrics` with columns: str_split, flt_auc, flt_gini, flt_ks, flt_pr_auc, flt_brier, flt_median_pred
 - Save to `output/metrics_summary.csv`
@@ -91,5 +92,5 @@ Markdown: explains distribution stability across splits, divergence indicates ov
 - `plot_confusion_matrix(arr_y_test, arr_pred_test)`
 
 #### SHAP Partial Dependence Plots
-Markdown: explains PDP for verifying monotone constraints and understanding nonlinear relationships.
+Markdown: explains PDP for verifying monotone constraints and understanding nonlinear relationships. Uses test set only for unbiased interpretation.
 - `plot_shap_pdp(model, df_test[list_feature_cols].values, list_feature_cols)`
