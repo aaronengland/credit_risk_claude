@@ -28,6 +28,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 
 ## Table of Contents
 
+- [Advisory Panel](#advisory-panel)
 - [Claude Code Skills](#claude-code-skills)
 - [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
@@ -44,6 +45,23 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
   - [9. Champion-Challenger](#9-champion-challenger)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
+
+## Advisory Panel
+
+This project includes an advisory panel of specialized Claude personas for critiquing completed models, brainstorming new approaches, and conducting research. Each member brings a distinct perspective to ensure decisions are challenged from every angle.
+
+| Member | Role | Focus Area |
+|--------|------|------------|
+| **Colby Wight** | Data Scientist | Feature engineering, data quality, implementation details |
+| **Cameron Marsden** | Senior Data Scientist | Validation methodology, statistical rigor, mentorship |
+| **Michael Francis** | SVP of Risk and Data Science | Regulatory compliance, model governance, business impact |
+| **John Candido** | Data Science Advisor | Strategic alignment, stakeholder communication, big-picture thinking |
+| **Aaron Hunsaker** | MLOps Engineer | Deployment, monitoring, infrastructure, operational reliability |
+| **Sean Seamonds** | Director of Data Engineering | Data pipelines, data quality, platform architecture |
+
+Panel member profiles are stored in `advisory-panel/` and can be used to simulate stakeholder review, stress-test modeling decisions, or research new techniques.
+
+---
 
 ## Claude Code Skills
 
