@@ -357,7 +357,7 @@ Monotone constraints are applied to ensure the model's predictions move in the e
 
 ### Bayesian Hyperparameter Tuning
 
-Bayesian optimization via Optuna (50 trials) is used instead of grid or random search because it models the objective function and intelligently explores the hyperparameter space, converging on good configurations faster. Early stopping on the validation set determines the optimal number of boosting rounds during tuning.
+Bayesian optimization via Optuna (50 trials) is used instead of grid or random search because it models the objective function and intelligently explores the hyperparameter space, converging on good configurations faster. The objective function maximizes ROC AUC on the validation set, as AUC is the standard discrimination metric for credit risk models and is threshold-independent. Early stopping on the validation set determines the optimal number of boosting rounds during tuning.
 
 No sample weights or `scale_pos_weight` are used. The model is trained on the natural class distribution (~19% default rate), which produces well-calibrated probability estimates without requiring post-hoc calibration.
 
@@ -393,6 +393,19 @@ Bureau score, utilization, and employment length are the most important features
 ## 5. Model Evaluation
 
 The model was trained on combined train+valid data, so Train+Valid metrics reflect in-sample performance while Test is the true out-of-time holdout.
+
+### Evaluation Metrics
+
+The following metrics are used to assess model performance. Each captures a different aspect of model quality relevant to credit risk:
+
+| Metric | What It Measures | Why It Matters for Credit Risk |
+|--------|-----------------|-------------------------------|
+| **AUC** | Area under the ROC curve; probability that a randomly chosen defaulter is scored higher than a non-defaulter | Standard discrimination metric for credit risk models; threshold-independent, so it evaluates rank-ordering ability regardless of the chosen cutoff |
+| **Gini** | 2 * AUC - 1; rescales AUC to a 0-1 range where 0 is random and 1 is perfect | The industry-standard discrimination metric reported to regulators and model validators in credit risk |
+| **KS** | Maximum separation between the cumulative distributions of defaulters and non-defaulters | Measures the model's peak ability to separate good from bad borrowers; commonly reported alongside Gini in credit risk scorecards |
+| **PR AUC** | Area under the precision-recall curve | Evaluates performance on the minority class (defaults); important because AUC can be optimistic when defaults are rare |
+| **Brier** | Mean squared error between predicted probabilities and actual outcomes | Validates calibration, which is critical because predicted probabilities are used directly for loan pricing, loss reserving, and capital allocation |
+| **Median Pred** | Median predicted probability of default | Sanity check that the model's central tendency aligns with the observed default rate; large deviations indicate systematic bias |
 
 ### Metrics Summary
 
