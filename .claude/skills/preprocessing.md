@@ -47,7 +47,12 @@ One function per code cell, ordered to match execution order.
    - Does NOT drop any columns. Column exclusion is handled in 04_model.
    - Returns a DataFrame
 
-2. `plot_missing_before_after(df_before, df_after, str_filename='output/missing_before_after.png')` - Grouped horizontal bar chart comparing proportion missing before and after preprocessing. Only shows columns that had missing values before.
+2. Custom transformer class `TextStandardizer(BaseEstimator, TransformerMixin)`:
+   - Lowercases and strips whitespace from all string values in the input array
+   - Passes through non-string and null values unchanged
+   - Returns a numpy array
+
+3. `plot_missing_before_after(df_before, df_after, str_filename='output/missing_before_after.png')` - Grouped horizontal bar chart comparing proportion missing before and after preprocessing. Only shows columns that had missing values before.
 
 ### Constants Cell
 
@@ -90,8 +95,8 @@ Markdown: explains median imputation (robust to skewed distributions common in c
 - Define `numeric_transformer` with `SimpleImputer(strategy='median')`
 
 #### Categorical Preprocessing
-Markdown: explains constant imputation ("missing" as its own category, since missingness can be informative in credit risk). Ordinal encoding preferred over one-hot for XGBoost (avoids sparse features, XGBoost learns splits on ordinal values). Unknown categories encoded as -1.
-- Define `categorical_transformer` with `SimpleImputer(strategy='constant', fill_value='missing')` then `OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)`
+Markdown: explains text standardization (lowercase and strip whitespace to prevent duplicates like "Mobile" vs "mobile"), constant imputation ("missing" as its own category, since missingness can be informative in credit risk). Ordinal encoding preferred over one-hot for XGBoost (avoids sparse features, XGBoost learns splits on ordinal values). The integer assignments are purely alphabetical and do not consider the target variable, avoiding leakage risk. Unknown categories encoded as -1.
+- Define `categorical_transformer` with `TextStandardizer()` then `SimpleImputer(strategy='constant', fill_value='missing')` then `OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)`
 
 #### Assemble Pipeline
 Markdown: explains the pipeline chains FeatureEngineer with ColumnTransformer, encapsulated in a single serializable object for API reuse.

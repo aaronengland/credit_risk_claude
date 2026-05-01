@@ -236,7 +236,7 @@ The pipeline is structured in two stages:
 
 2. **Column Transformer**: applies different preprocessing to numeric vs. categorical features:
    - **Numeric (median imputation):** median is preferred over mean because credit risk data often has skewed distributions (e.g., income, loan amounts), and the median is robust to outliers. No scaling is applied because XGBoost is a tree-based algorithm that is invariant to monotonic transformations.
-   - **Categorical (constant imputation + ordinal encoding):** missing values are filled with "missing" as its own category, since missingness can be informative in credit risk (e.g., missing employment length may indicate informal employment). Ordinal encoding is preferred over one-hot encoding for XGBoost because it avoids creating high-dimensional sparse features and XGBoost can learn effective splits on ordinal values. Unknown categories at inference time are encoded as -1.
+   - **Categorical (constant imputation + ordinal encoding):** missing values are filled with "missing" as its own category, since missingness can be informative in credit risk (e.g., missing employment length may indicate informal employment). Ordinal encoding is preferred over one-hot encoding for XGBoost because it avoids creating high-dimensional sparse features and XGBoost can learn effective splits on ordinal values. The integer assignments are purely alphabetical and do not consider the target variable, which avoids the leakage risk associated with target encoding. XGBoost handles the arbitrary ordering by learning its own splits on these values. Unknown categories at inference time are encoded as -1.
 
 ### Learned Parameters
 
