@@ -22,6 +22,10 @@
 
 ---
 
+<p align="center">
+  <img src="img/review_cycle.png" alt="Review Cycle" width="500"/>
+</p>
+
 # Credit Risk Model
 
 A credit risk modeling project built with Claude Code, demonstrating an end-to-end machine learning workflow from exploratory data analysis through post-deployment monitoring.
