@@ -16,6 +16,8 @@
   <img src="img/logo-teal.png" alt="FastAPI" height="40"/>
   &nbsp;&nbsp;&nbsp;
   <img src="img/Docker_Logo.svg.png" alt="Docker" height="40"/>
+  &nbsp;&nbsp;&nbsp;
+  <img src="img/mlflow.png" alt="MLflow" height="40"/>
 </p>
 
 ---
@@ -403,16 +405,16 @@ The following search space was explored during Bayesian optimization:
 | Parameter | Value |
 |-----------|-------|
 | max_depth | 3 |
-| learning_rate | 0.112 |
-| min_child_weight | 2 |
-| subsample | 0.770 |
-| colsample_bytree | 0.820 |
-| gamma | 2.266 |
-| reg_alpha | 0.659 |
-| reg_lambda | 0.016 |
-| n_estimators (best_iteration) | 59 |
+| learning_rate | 0.032 |
+| min_child_weight | 3 |
+| subsample | 0.789 |
+| colsample_bytree | 0.742 |
+| gamma | 2.665 |
+| reg_alpha | 1.23e-04 |
+| reg_lambda | 9.36e-07 |
+| n_estimators (best_iteration) | 321 |
 
-The tuning converged on a shallow tree (max_depth=3) with a moderate learning rate (0.112), requiring only 59 boosting rounds. The shallow depth provides strong regularization by limiting interaction complexity, while gamma (2.266) adds pruning. L1 regularization (reg_alpha=0.659) encourages feature sparsity, and moderate subsampling (0.770) adds stochastic regularization.
+The tuning converged on a shallow tree (max_depth=3) with a low learning rate (0.032), requiring 321 boosting rounds. The shallow depth provides strong regularization by limiting interaction complexity, while gamma (2.665) adds pruning. Moderate subsampling (0.789) and feature sampling (0.742) add stochastic regularization. The L1/L2 penalties settled near their lower bounds, indicating tree-structural regularization was sufficient.
 
 ### Optimization History
 
@@ -449,16 +451,16 @@ The following metrics are used to assess model performance. Each captures a diff
 
 | Split | AUC | Gini | KS | PR AUC | Brier | Median Pred | Mean Pred | Target Mean |
 |-------|-----|------|-----|--------|-------|-------------|-----------|-------------|
-| Train+Valid | 0.8114 | 0.6228 | 0.4629 | 0.5274 | 0.1189 | 0.1308 | 0.1874 | 0.1876 |
-| Test | 0.8024 | 0.6049 | 0.4692 | 0.4809 | 0.1199 | 0.1327 | 0.1861 | 0.1825 |
+| Train+Valid | 0.8136 | 0.6272 | 0.4685 | 0.5320 | 0.1182 | 0.1267 | 0.1876 | 0.1876 |
+| Test | 0.8032 | 0.6065 | 0.4779 | 0.4846 | 0.1196 | 0.1300 | 0.1865 | 0.1825 |
 
 Key observations:
 - **AUC** of 0.80 on the out-of-time test set indicates the model generalizes well.
-- **Gini** of 0.60 on test is a strong result for a credit risk model.
-- **KS** of 0.47 on test shows good separation between defaulters and non-defaulters.
+- **Gini** of 0.61 on test is a strong result for a credit risk model.
+- **KS** of 0.48 on test shows good separation between defaulters and non-defaulters.
 - **Brier score** is consistent between in-sample and out-of-time (~0.12), indicating stable calibration.
 - **Median prediction** is consistent (~0.13), close to the population default rate.
-- **Mean prediction** closely matches the actual default rate on both splits (18.7% predicted vs 18.8% actual on Train+Valid, 18.6% vs 18.3% on Test), confirming the model is well-calibrated in aggregate.
+- **Mean prediction** closely matches the actual default rate on both splits (18.8% predicted vs 18.8% actual on Train+Valid, 18.7% vs 18.3% on Test), confirming the model is well-calibrated in aggregate.
 
 ### ROC Curves
 
@@ -502,18 +504,18 @@ Decile analysis is standard in credit risk for evaluating rank-ordering within s
 
 | Decile | PD Range | Count | Actual Default Rate | Cumulative Capture Rate |
 |--------|----------|-------|--------------------|-----------------------|
-| 1 | 0.006-0.029 | 380 | 1.6% | 100.0% |
-| 2 | 0.029-0.047 | 380 | 1.6% | 99.1% |
-| 3 | 0.047-0.071 | 379 | 6.9% | 98.3% |
-| 4 | 0.071-0.098 | 380 | 9.2% | 94.5% |
-| 5 | 0.098-0.133 | 380 | 8.7% | 89.5% |
-| 6 | 0.133-0.171 | 379 | 12.1% | 84.7% |
-| 7 | 0.171-0.222 | 380 | 20.8% | 78.1% |
-| 8 | 0.222-0.304 | 379 | 25.9% | 66.7% |
-| 9 | 0.304-0.444 | 380 | 38.4% | 52.5% |
-| 10 | 0.446-0.878 | 380 | 57.4% | 31.5% |
+| 1 (highest risk) | 0.452-0.929 | 380 | 55.8% | 30.6% |
+| 2 | 0.309-0.451 | 380 | 39.5% | 52.2% |
+| 3 | 0.221-0.308 | 379 | 25.9% | 66.4% |
+| 4 | 0.169-0.221 | 380 | 21.8% | 78.4% |
+| 5 | 0.130-0.169 | 379 | 12.4% | 85.1% |
+| 6 | 0.092-0.130 | 380 | 8.2% | 89.6% |
+| 7 | 0.066-0.092 | 380 | 9.2% | 94.7% |
+| 8 | 0.043-0.066 | 379 | 5.8% | 97.8% |
+| 9 | 0.025-0.043 | 380 | 2.4% | 99.1% |
+| 10 (lowest risk) | 0.002-0.025 | 380 | 1.6% | 100.0% |
 
-Default rates increase monotonically across deciles, confirming strong rank-ordering. The top decile captures 31.5% of all defaults, and the top two deciles capture 52.5%.
+Default rates decrease monotonically from decile 1 (highest risk) to decile 10 (lowest risk), confirming strong rank-ordering. The top decile captures 30.6% of all defaults, and the top two deciles capture 52.2%.
 
 ### Threshold Sensitivity Analysis
 
@@ -523,14 +525,14 @@ The optimal cutoff depends on the cost of false positives (declining good borrow
 
 | Threshold | Precision | Recall | F1 | Approval Rate |
 |-----------|-----------|--------|----|---------------|
-| 0.10 | 27.5% | 89.5% | 42.0% | 40.6% |
-| 0.15 | 32.6% | 81.7% | 46.6% | 54.3% |
-| 0.20 | 38.6% | 70.9% | 50.0% | 66.5% |
-| 0.25 | 43.1% | 62.2% | 50.9% | 73.7% |
-| 0.30 | 47.0% | 52.8% | 49.7% | 79.5% |
-| 0.50 | 61.3% | 23.8% | 34.3% | 92.9% |
+| 0.10 | 28.0% | 88.5% | 42.5% | 42.3% |
+| 0.15 | 33.4% | 81.7% | 47.4% | 55.4% |
+| 0.20 | 38.5% | 70.6% | 49.8% | 66.6% |
+| 0.25 | 43.2% | 62.9% | 51.2% | 73.4% |
+| 0.30 | 47.3% | 54.1% | 50.5% | 79.1% |
+| 0.50 | 59.7% | 26.1% | 36.3% | 92.0% |
 
-At a 0.20 threshold, the model achieves the best F1 balance (50.0%) with a 66.5% approval rate. Lower thresholds maximize default detection (recall) at the cost of approving fewer borrowers, while higher thresholds maximize approval rate at the cost of missing more defaults.
+At a 0.25 threshold, the model achieves the best F1 balance (51.2%) with a 73.4% approval rate. Lower thresholds maximize default detection (recall) at the cost of approving fewer borrowers, while higher thresholds maximize approval rate at the cost of missing more defaults.
 
 ---
 
@@ -542,22 +544,22 @@ Under ECOA (Equal Credit Opportunity Act), age is a protected class. Although `i
 
 | Group | N | Target Mean | Pred Mean | Pred Median | AUC |
 |-------|---|-------------|-----------|-------------|-----|
-| <60 | 3,690 | 18.32% | 18.62% | 0.1327 | 0.8039 |
-| >=60 | 107 | 15.89% | 18.38% | 0.1334 | 0.7353 |
+| <60 | 3,722 | 18.38% | 18.68% | 0.1301 | 0.8021 |
+| >=60 | 75 | 12.00% | 17.15% | 0.1216 | 0.8721 |
 
-The median predicted probability is nearly identical between groups (0.1327 vs 0.1334), suggesting no systematic bias in predictions. The AUC difference is partly attributable to the small sample size of the 60+ group (n=107).
+The median predicted probability is similar between groups (0.1301 vs 0.1216). The 60+ group has a notably lower actual default rate (12.0% vs 18.4%), and the model's mean predicted PD for that group (17.2%) reflects this is a lower-risk population. The higher AUC for the 60+ group (0.87) should be interpreted cautiously given the very small sample size (n=75).
 
 ### Bootstrap Confidence Intervals on AUC
 
-With only 107 observations in the 60+ group, point estimates can be misleading. Bootstrap resampling (1,000 iterations) quantifies the uncertainty:
+With only 75 observations in the 60+ group, point estimates can be misleading. Bootstrap resampling (1,000 iterations) quantifies the uncertainty:
 
 | Group | AUC | 95% CI |
 |-------|-----|--------|
-| <60 | 0.8042 | (0.7863, 0.8216) |
-| >=60 | 0.7344 | (0.5845, 0.8578) |
-| **Difference** | **0.0688** | **(-0.0624, 0.2188)** |
+| <60 | 0.8021 | (0.7835, 0.8198) |
+| >=60 | 0.8713 | (0.6596, 0.9870) |
+| **Difference** | **-0.0748** | **(-0.1896, 0.1079)** |
 
-The 95% confidence interval for the AUC difference includes zero, meaning the difference is **not statistically significant**. The wide CI for the 60+ group (0.58-0.86) reflects the uncertainty inherent in the small sample size. This should be monitored as more data accumulates post-deployment.
+The 95% confidence interval for the AUC difference includes zero, meaning the difference is **not statistically significant**. The extremely wide CI for the 60+ group (0.66-0.99) reflects the uncertainty inherent in the small sample size (n=75). This should be monitored as more data accumulates post-deployment.
 
 ### Predicted PD vs Actual Default Rate by Age Group
 
@@ -667,9 +669,9 @@ Post-deployment monitoring tracks model performance and population stability ove
 
 | Metric | Value |
 |--------|-------|
-| Overall PSI | 0.0009 (no significant shift) |
-| Baseline Median PD | 0.1303 |
-| Production Median PD | 0.1327 |
+| Overall PSI | 0.0013 (no significant shift) |
+| Baseline Median PD | 0.1267 |
+| Production Median PD | 0.1300 |
 | Baseline Target Mean | 18.98% |
 | Production Target Mean | 18.25% |
 | Features with Moderate CSI | 0 |
@@ -679,7 +681,7 @@ Post-deployment monitoring tracks model performance and population stability ove
 
 ![PSI Trend](07_monitoring/output/psi_trend.png)
 
-PSI measures how much the distribution of predicted probabilities has shifted from the development population. Training months (left of black line) serve as a control and should show near-zero PSI. An overall PSI of 0.0009 indicates no meaningful population shift.
+PSI measures how much the distribution of predicted probabilities has shifted from the development population. Training months (left of black line) serve as a control and should show near-zero PSI. An overall PSI of 0.0013 indicates no meaningful population shift.
 
 ### CSI by Feature
 
@@ -739,10 +741,10 @@ The champion-challenger framework compares the current production model against 
 
 | Model | AUC | Gini | KS | Brier | Median Pred |
 |-------|-----|------|-----|-------|-------------|
-| Champion (XGBoost) | 0.8024 | 0.6049 | 0.4692 | 0.1199 | 0.1327 |
-| Challenger (Logistic Regression) | 0.7943 | 0.5886 | 0.4649 | 0.1228 | 0.1433 |
+| Champion (XGBoost) | 0.8032 | 0.6065 | 0.4779 | 0.1196 | 0.1300 |
+| Challenger (Logistic Regression) | 0.7943 | 0.5885 | 0.4666 | 0.1228 | 0.1416 |
 
-The champion outperforms the challenger across all metrics, but the gap is much narrower than the previous SVM comparison: AUC delta of only 0.008, KS delta of 0.004. This confirms the XGBoost model provides meaningful lift over the regulatory baseline, justifying its added complexity.
+The champion outperforms the challenger across all metrics, but the gap is narrow: AUC delta of only 0.009, KS delta of 0.011. This confirms the XGBoost model provides meaningful lift over the regulatory baseline, justifying its added complexity.
 
 ### AUC Comparison
 
@@ -770,7 +772,7 @@ The champion outperforms the challenger across all metrics, but the gap is much 
 
 ### Recommendation
 
-The challenger (Logistic Regression) does not improve over the champion (XGBoost) on either discrimination or calibration. **Recommendation: retain current production model.** The narrow margins confirm the XGBoost model justifies its complexity over the interpretable baseline.
+The challenger (Logistic Regression) does not improve over the champion (XGBoost) on either discrimination or calibration. Best challenger params: C=0.01, L1 penalty, saga solver. **Recommendation: retain current production model.** The narrow margins confirm the XGBoost model justifies its complexity over the interpretable baseline.
 
 ---
 
@@ -882,6 +884,7 @@ After implementing the panel's initial feedback, a follow-up review was conducte
 - **Data Storage:** AWS S3
 - **Serving:** FastAPI
 - **Containerization:** Docker
+- **Model Registry:** MLflow
 - **Automation:** Claude Code Skills
 
 ## Folder Structure
