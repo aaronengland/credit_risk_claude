@@ -19,7 +19,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 
 ## Claude Code Skills
 
-This project uses Claude Code skills to automate each step of the modeling workflow. Skills can be invoked independently or run sequentially with `/run-all`.
+This project uses Claude Code skills to automate each step of the modeling workflow. Skills can be invoked independently or run sequentially.
 
 | Skill | Description |
 |-------|-------------|
@@ -33,6 +33,26 @@ This project uses Claude Code skills to automate each step of the modeling workf
 | `/deployment` | Populate API notebook with FastAPI, Dockerfile, and Docker build |
 | `/documentation` | Generate comprehensive README with all plots and tables |
 | `/run-all` | Execute all skills sequentially |
+
+### Run the Full Pipeline
+
+To build the entire model from scratch, run the following in Claude Code:
+
+```
+/run-all
+```
+
+This executes all skills in order: folder structure, EDA, data split, preprocessing, model, model evaluation, disparate impact, deployment, and documentation. After each notebook is populated, run it on your compute environment (e.g., SageMaker) before moving to the next step, as downstream notebooks depend on upstream outputs saved to S3.
+
+### Run a Single Step
+
+To run or re-run an individual step, invoke the skill directly:
+
+```
+/eda
+```
+
+This is useful when you need to iterate on a specific step without re-running the full pipeline. For example, after adjusting hyperparameter search ranges, you can re-run `/model` without touching EDA or preprocessing.
 
 ---
 
