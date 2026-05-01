@@ -31,6 +31,14 @@ Each section should include:
 - Key observations and interpretations of results
 - Explanations of decisions
 
+### Preprocessing Section
+
+In addition to the standard pipeline design description and missing values plot, the preprocessing section must include a **Learned Parameters** subsection that documents exactly what the fitted pipeline computed from the training data. This includes:
+- A table of each numeric feature and its learned median imputation value, extracted from the fitted `SimpleImputer`
+- The ordinal encoding category-to-integer mapping for each categorical feature, extracted from the fitted `OrdinalEncoder`
+
+Read the notebook cell outputs to get these values. This provides full transparency so stakeholders can answer questions like "what value was imputed for bureau_score?" without loading the serialized pipeline.
+
 ### Tables to Include
 
 - `01_eda/output/descriptive_statistics.csv`

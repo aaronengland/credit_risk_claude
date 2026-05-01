@@ -238,6 +238,79 @@ The pipeline is structured in two stages:
    - **Numeric (median imputation):** median is preferred over mean because credit risk data often has skewed distributions (e.g., income, loan amounts), and the median is robust to outliers. No scaling is applied because XGBoost is a tree-based algorithm that is invariant to monotonic transformations.
    - **Categorical (constant imputation + ordinal encoding):** missing values are filled with "missing" as its own category, since missingness can be informative in credit risk (e.g., missing employment length may indicate informal employment). Ordinal encoding is preferred over one-hot encoding for XGBoost because it avoids creating high-dimensional sparse features and XGBoost can learn effective splits on ordinal values. Unknown categories at inference time are encoded as -1.
 
+### Learned Parameters
+
+The tables below show exactly what the fitted pipeline computed from the training data. This provides full transparency for auditability, so stakeholders can answer questions like "what value was imputed for bureau_score?"
+
+#### Numeric Imputation (Median)
+
+Each numeric feature's missing values are replaced with the median computed from the training set:
+
+| Feature | Median |
+|---------|--------|
+| apr | 0.162 |
+| bureau_score | 630.0 |
+| charged_off_amount | 0.0 |
+| delinq_12m | 0.0 |
+| employment_length_years | 5.09 |
+| flt_payment_to_income | 0.98 |
+| has_prior_loans_with_us | 0.0 |
+| inquiries_6m | 2.0 |
+| int_age | 41.0 |
+| loan_amount | 4,880.0 |
+| loan_id | 12,445.0 |
+| open_trades | 2.0 |
+| paid_interest_amount | 969.01 |
+| public_records | 0.0 |
+| stated_income | 4,974.5 |
+| term_months | 18.0 |
+| utilization | 0.34 |
+
+#### Categorical Encoding (Ordinal)
+
+Each categorical feature's categories are mapped to integers. Missing values are first imputed as "missing", then encoded. Unknown categories at inference time are encoded as -1.
+
+**channel:**
+
+| Category | Encoded Value |
+|----------|---------------|
+| Mobile | 0 |
+| Partner | 1 |
+| Web | 2 |
+| mobile | 3 |
+| partner | 4 |
+| web | 5 |
+| missing | 6 |
+
+**state:**
+
+| Category | Encoded Value |
+|----------|---------------|
+| 00 | 0 |
+| ?? | 1 |
+| AZ | 2 |
+| CA | 3 |
+| FL | 4 |
+| GA | 5 |
+| IL | 6 |
+| IN | 7 |
+| MA | 8 |
+| MD | 9 |
+| MI | 10 |
+| MO | 11 |
+| NC | 12 |
+| NJ | 13 |
+| NY | 14 |
+| OH | 15 |
+| PA | 16 |
+| TN | 17 |
+| TX | 18 |
+| VA | 19 |
+| WA | 20 |
+| WI | 21 |
+| XX | 22 |
+| missing | 23 |
+
 ### Missing Values Before and After
 
 ![Missing Before After](03_preprocessing/output/missing_before_after.png)
