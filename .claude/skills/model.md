@@ -39,7 +39,7 @@ import shap
 import optuna
 import xgboost as xgb
 import mlflow
-import mlflow.xgboost
+import mlflow.sklearn
 ```
 
 ### Functions Cell
@@ -113,6 +113,6 @@ Markdown: explains that the final model is trained on combined train + validatio
 - Set experiment to `credit_risk_model`, start run named `xgboost_credit_risk`
 - Log hyperparameters: all best params from Optuna study, plus `n_estimators`, `n_features`, `train_valid_rows`
 - Log test set metrics: `test_auc`, `test_brier`, `test_gini`
-- Log the XGBoost model via `mlflow.xgboost.log_model`
+- Log the XGBoost model via `mlflow.sklearn.log_model` (sklearn flavor for XGBClassifier compatibility)
 - Log artifacts: `xgboost_model.joblib`, `best_params.csv`, `feature_cols.joblib`
 - Print the MLflow run ID and experiment name
