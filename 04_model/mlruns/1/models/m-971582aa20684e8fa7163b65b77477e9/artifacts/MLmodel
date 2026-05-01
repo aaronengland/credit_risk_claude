@@ -1,0 +1,23 @@
+artifact_path: /home/ec2-user/SageMaker/credit_risk_claude/04_model/mlruns/1/models/m-971582aa20684e8fa7163b65b77477e9/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.13
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.11.1
+model_id: m-971582aa20684e8fa7163b65b77477e9
+model_size_bytes: 343152
+model_uuid: m-971582aa20684e8fa7163b65b77477e9
+prompts: null
+run_id: a78ab997f7cf43499a9ebaecae3aa04d
+utc_time_created: '2026-05-01 17:59:08.082420'
