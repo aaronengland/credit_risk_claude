@@ -45,6 +45,8 @@ One function per code cell, ordered to match execution order.
 
 6. `plot_age_shap_pdp(model_age, arr_X, list_cols, str_filename)` - Grid of SHAP partial dependence scatter plots from the age proxy model. 3-column layout, salmon color. Shows each feature's relationship with age group prediction.
 
+7. `bootstrap_auc_ci(arr_y_true, arr_y_pred, int_n_bootstrap=1000, flt_ci=0.95)` - Resample with replacement int_n_bootstrap times, compute AUC for each resample, return (flt_mean, flt_lower, flt_upper) for the confidence interval. Skips resamples where only one class is present.
+
 ### Constants Cell
 
 ```python
@@ -86,6 +88,14 @@ Markdown: similar distributions suggest comparable treatment.
 #### KS Test
 Markdown: formal statistical test for distributional differences.
 - KS test between age group predictions, print statistic and p-value
+
+#### Bootstrap Confidence Intervals on AUC
+Markdown: with small sample sizes, point estimates can be misleading and bootstrap CIs quantify uncertainty around AUC differences.
+- Compute bootstrap 95% CIs on AUC for each age group using `bootstrap_auc_ci`
+- Compute the bootstrap distribution of the AUC difference (group1 - group2) by resampling each group independently
+- Print AUC with CI for each group
+- Print AUC difference with CI
+- State whether the CI for the difference includes zero (not statistically significant if yes)
 
 #### Age Proxy Model
 Markdown: train XGBoost to predict age group using credit model features to identify proxy variables.

@@ -42,7 +42,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 One function per code cell, ordered to match execution order.
 
 1. Custom transformer class `FeatureEngineer(BaseEstimator, TransformerMixin)`:
-   - Engineers `int_age` from `dob` (years between dob and current date). Does NOT drop `dob`.
+   - Engineers `int_age` from `dob` (years between dob and reference date). Does NOT drop `dob`.
+   - Stores `self.reference_date_ = pd.Timestamp.now()` during `fit()` so that age calculation is reproducible and consistent between training and serving, preventing train-serve skew over time.
    - Engineers `flt_payment_to_income` = `loan_amount / stated_income`
    - Does NOT drop any columns. Column exclusion is handled in 04_model.
    - Returns a DataFrame
@@ -84,6 +85,12 @@ Each step gets its own `####` markdown header with a description explaining the 
 #### Read Data
 - Read `df_train`, `df_valid`, `df_test` from S3 parquet files in `02_data_split/`
 - Print shapes
+
+#### Data Contract Validation
+Markdown: explains that incoming data is validated against the expected schema before processing to catch upstream schema changes, missing columns, and data quality issues early.
+- Assert all expected columns exist in each split
+- Assert no empty splits
+- Assert target is binary (values in {0, 1})
 
 #### Feature Engineering
 Markdown: explains that FeatureEngineer creates new features (age, payment-to-income) without dropping any columns. Column exclusion deferred to 04_model to keep preprocessing fast.

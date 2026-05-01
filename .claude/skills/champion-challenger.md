@@ -40,12 +40,12 @@ One function per code cell, ordered to match execution order.
 - Load champion XGBoost model and feature columns
 
 #### Train Challenger Model
-Markdown: explains challenger is an untuned SVM with RBF kernel + StandardScaler pipeline, serving as a baseline comparison. Trained on the same combined train+valid data as the champion for a fair comparison.
-- Train `Pipeline([StandardScaler, SVC(kernel='rbf', probability=True)])` on combined train+valid data
+Markdown: explains challenger is a logistic regression with StandardScaler, tuned via GridSearchCV over regularization strength (C) and penalty type (L1/L2). Logistic regression is the regulatory baseline in credit risk and provides an interpretability benchmark against the tuned XGBoost champion. Trained on the same combined train+valid data as the champion for a fair comparison.
+- Train `Pipeline([StandardScaler, LogisticRegression(max_iter=1000)])` with GridSearchCV over C and penalty, on combined train+valid data
 
 #### Generate Predictions
 - Score both models on the same out-of-time test set
-- Build `dict_models` with `'Champion (XGBoost)'` and `'Challenger (SVM)'` keys
+- Build `dict_models` with `'Champion (XGBoost)'` and `'Challenger (Logistic Regression)'` keys
 
 #### Metrics Comparison
 - Compute AUC, Gini, KS, Brier, median pred for both

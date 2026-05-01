@@ -58,11 +58,14 @@ One function per code cell, ordered to match execution order.
 #   loan_id (identifier), origination_date (splitting), dob (replaced by int_age),
 #   charged_off_amount/paid_interest_amount (post-outcome leakage),
 #   apr (not known at application), flt_payment_to_income (depends on apr),
-#   int_age (fair lending compliance), state (excluded), target
+#   int_age (fair lending compliance),
+#   state (excluded to avoid geographic discrimination concerns and sparse high-cardinality encoding),
+#   target
 # monotone constraints dict:
 #   bureau_score: -1, delinq_12m: +1, utilization: +1, inquiries_6m: +1,
 #   public_records: +1, employment_length_years: -1, stated_income: -1,
-#   loan_amount: +1, term_months: +1, has_prior_loans_with_us: 0, channel: 0
+#   loan_amount: +1, term_months: +1, has_prior_loans_with_us: 0, channel: 0,
+#   open_trades: 0 (could go either way; more trades could indicate credit experience or over-extension)
 # int_n_trials = 50
 # output directory
 ```
@@ -71,6 +74,11 @@ One function per code cell, ordered to match execution order.
 
 #### Read Data
 - Read `df_train_clean`, `df_valid_clean`, `df_test_clean` from S3 parquet
+
+#### Data Contract Validation
+- Assert no empty splits
+- Assert target column exists in each split
+- Assert target is binary (values in {0, 1})
 
 #### Define Features
 Markdown: explains which columns are excluded and why. Explains monotone constraints for regulatory directional consistency.

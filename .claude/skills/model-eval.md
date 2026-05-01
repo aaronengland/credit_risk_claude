@@ -46,6 +46,10 @@ One function per code cell, ordered to match execution order.
 
 7. `plot_shap_pdp(model, arr_X, list_feature_cols, str_filename)` - Grid of SHAP partial dependence scatter plots (feature value vs SHAP value) for each feature. 3-column layout. Horizontal line at y=0.
 
+8. `plot_decile_analysis(arr_y_true, arr_y_pred, str_filename)` - Bins predictions into 10 deciles using `pd.qcut`. For each decile computes predicted PD range, count, actual default rate, and cumulative capture rate. Prints a summary DataFrame table. Plots a bar chart of actual default rate by decile with PD range as x-labels. Steelblue bars with black edgecolor, annotated with actual default rate. Uses `rotation=45` for x-labels.
+
+9. `plot_threshold_analysis(arr_y_true, arr_y_pred, str_filename)` - Evaluates thresholds at 0.10, 0.15, 0.20, 0.25, 0.30, 0.50. For each threshold computes precision, recall, F1, and approval rate (proportion below threshold). Prints a summary DataFrame table. Plots a multi-line chart with precision (steelblue), recall (salmon), F1 (seagreen), and approval rate (gray dashed). Legend at lower right.
+
 ### Constants Cell
 
 ```python
@@ -94,3 +98,11 @@ Markdown: explains distribution stability across splits, divergence indicates ov
 #### SHAP Partial Dependence Plots
 Markdown: explains PDP for verifying monotone constraints and understanding nonlinear relationships. Uses test set only for unbiased interpretation.
 - `plot_shap_pdp(model, df_test[list_feature_cols].values, list_feature_cols)`
+
+#### Decile Analysis
+Markdown: explains this is standard in credit risk for evaluating rank-ordering within score bands. A well-discriminating model shows monotonically increasing default rates from lowest to highest decile.
+- `plot_decile_analysis(arr_y_test, arr_pred_test)`
+
+#### Threshold Sensitivity Analysis
+Markdown: explains that the optimal cutoff depends on the cost of false positives vs false negatives and varies by business use case. Shows precision, recall, F1, and approval rate across thresholds.
+- `plot_threshold_analysis(arr_y_test, arr_pred_test)`
