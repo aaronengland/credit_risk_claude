@@ -268,19 +268,16 @@ Each numeric feature's missing values are replaced with the median computed from
 
 #### Categorical Encoding (Ordinal)
 
-Each categorical feature's categories are mapped to integers. Missing values are first imputed as "missing", then encoded. Unknown categories at inference time are encoded as -1.
+Each categorical feature's categories are mapped to integers. Text standardization (lowercase + strip) runs first, collapsing duplicates like "Mobile"/"mobile" into a single category. Missing values are then imputed as "missing" and encoded. Unknown categories at inference time are encoded as -1.
 
 **channel:**
 
 | Category | Encoded Value |
 |----------|---------------|
-| Mobile | 0 |
-| Partner | 1 |
-| Web | 2 |
-| mobile | 3 |
-| partner | 4 |
-| web | 5 |
-| missing | 6 |
+| mobile | 0 |
+| partner | 1 |
+| web | 2 |
+| missing | 3 |
 
 **state:**
 
@@ -288,27 +285,27 @@ Each categorical feature's categories are mapped to integers. Missing values are
 |----------|---------------|
 | 00 | 0 |
 | ?? | 1 |
-| AZ | 2 |
-| CA | 3 |
-| FL | 4 |
-| GA | 5 |
-| IL | 6 |
-| IN | 7 |
-| MA | 8 |
-| MD | 9 |
-| MI | 10 |
-| MO | 11 |
-| NC | 12 |
-| NJ | 13 |
-| NY | 14 |
-| OH | 15 |
-| PA | 16 |
-| TN | 17 |
-| TX | 18 |
-| VA | 19 |
-| WA | 20 |
-| WI | 21 |
-| XX | 22 |
+| az | 2 |
+| ca | 3 |
+| fl | 4 |
+| ga | 5 |
+| il | 6 |
+| in | 7 |
+| ma | 8 |
+| md | 9 |
+| mi | 10 |
+| mo | 11 |
+| nc | 12 |
+| nj | 13 |
+| ny | 14 |
+| oh | 15 |
+| pa | 16 |
+| tn | 17 |
+| tx | 18 |
+| va | 19 |
+| wa | 20 |
+| wi | 21 |
+| xx | 22 |
 | missing | 23 |
 
 ### Missing Values Before and After
