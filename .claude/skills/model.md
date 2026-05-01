@@ -12,7 +12,7 @@ Populate the `04_model/notebook.ipynb` with XGBoost model training using Bayesia
 
 - Load preprocessed data from `03_preprocessing/` in S3.
 - Exclude non-feature columns (IDs, leaky variables, dates, compliance-sensitive) here, not in preprocessing.
-- Use Optuna for Bayesian hyperparameter tuning with `show_progress_bar=True`. Set random seeds for reproducibility: `seed=42` for the Optuna TPE sampler (`optuna.samplers.TPESampler(seed=42)`) and `random_state=42` for all XGBoost models (in the objective function, tuning model, and final model).
+- Use Optuna for Bayesian hyperparameter tuning with `show_progress_bar=True`. Define `int_random_state = 42` as a top-level constant and use it for all random seeds: `optuna.samplers.TPESampler(seed=int_random_state)` and `'random_state': int_random_state` in the objective function, tuning model, and final model.
 - Use validation data for early stopping.
 - Apply monotone constraints for regulatory directional consistency.
 - Do NOT use `scale_pos_weight` or sample weights. Train on natural class distribution.
@@ -69,6 +69,7 @@ One function per code cell, ordered to match execution order.
 #   loan_amount: +1, term_months: +1, has_prior_loans_with_us: 0, channel: 0,
 #   open_trades: 0 (could go either way; more trades could indicate credit experience or over-extension)
 # int_n_trials = 50
+# int_random_state = 42
 # output directory
 ```
 
@@ -112,7 +113,9 @@ Markdown: explains that the final model is trained on combined train + validatio
 #### Log to MLflow
 - Set experiment to `credit_risk_model`, start run named `xgboost_credit_risk`
 - Log hyperparameters: all best params from Optuna study, plus `n_estimators`, `n_features`, `train_valid_rows`
+- Load the preprocessing pipeline from `../03_preprocessing/output/preprocessing_pipeline.joblib` and log `reference_date` extracted from `preprocessing_pipeline.named_steps['feature_engineer'].reference_date_`
+- Log `monotone_constraints` (stringified `tpl_monotone_constraints`) and `excluded_columns` (stringified `list_exclude_cols`)
 - Log test set metrics: `test_auc`, `test_brier`, `test_gini`
 - Log the XGBoost model via `mlflow.sklearn.log_model` (sklearn flavor for XGBClassifier compatibility)
-- Log artifacts: `xgboost_model.joblib`, `best_params.csv`, `feature_cols.joblib`
+- Log artifacts: `xgboost_model.joblib`, `best_params.csv`, `feature_cols.joblib`, and the preprocessing pipeline (`../03_preprocessing/output/preprocessing_pipeline.joblib`)
 - Print the MLflow run ID and experiment name

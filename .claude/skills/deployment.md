@@ -38,7 +38,7 @@ Markdown: explains copying artifacts into build context.
 - `shutil.copy2` for preprocessing_pipeline.joblib, xgboost_model.joblib, feature_cols.joblib
 
 #### requirements.txt
-- `%%writefile requirements.txt` with fastapi, uvicorn, pandas, numpy, scikit-learn, xgboost, joblib
+- `%%writefile requirements.txt` with pinned exact versions (==) for reproducible builds: fastapi, uvicorn, pandas, numpy, scikit-learn, xgboost, joblib
 
 #### app.py
 Markdown: explains the FastAPI application structure.
@@ -55,8 +55,9 @@ Markdown: explains the FastAPI application structure.
     - `bureau_score`: optional validator checking 300-900 range if provided
     - `utilization`: optional validator checking 0-2.0 range if provided
     - `stated_income`: optional validator checking gt=0 if provided
-  - Pydantic `PredictionResponse` with `flt_probability_of_default`
-  - `/health` GET readiness endpoint that runs a dummy prediction through the model to verify artifacts are loaded; returns `{'status': 'unhealthy', 'error': ...}` on failure
+  - Compute model version hash at startup using MD5 of xgboost_model.joblib (first 8 hex chars), stored as `str_model_version`
+  - Pydantic `PredictionResponse` with `flt_probability_of_default` and `str_model_version`
+  - `/health` GET readiness endpoint that runs a dummy input through the full pipeline (pipeline.transform then model.predict_proba) to verify all artifacts work end-to-end; returns HTTP 503 with `JSONResponse(status_code=503, content={'status': 'unhealthy', 'error': ...})` on failure
   - `/predict` POST endpoint: converts to DataFrame, runs pipeline.transform, selects model features, returns predicted PD
 
 #### Dockerfile
@@ -72,6 +73,7 @@ Markdown: explains the FastAPI application structure.
 - `!docker build -t {str_image_name} .`
 
 #### Clean Up
-Markdown: explains artifacts are baked into Docker image and no longer needed.
-- `os.remove()` all artifacts: .joblib files, app.py, Dockerfile, requirements.txt
+Markdown: explains model artifacts are baked into Docker image and no longer needed; build files (app.py, Dockerfile, requirements.txt) persist in the repository.
+- `os.remove()` only copied .joblib artifacts (preprocessing_pipeline.joblib, xgboost_model.joblib, feature_cols.joblib)
+- Do NOT remove app.py, Dockerfile, or requirements.txt (these persist in the repo)
 - Use try/except FileNotFoundError for safety

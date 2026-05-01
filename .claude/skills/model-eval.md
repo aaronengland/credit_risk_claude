@@ -50,6 +50,8 @@ One function per code cell, ordered to match execution order.
 
 9. `plot_threshold_analysis(arr_y_true, arr_y_pred, str_filename)` - Evaluates thresholds at 0.10, 0.15, 0.20, 0.25, 0.30, 0.50. For each threshold computes precision, recall, F1, and approval rate (proportion below threshold). Prints a summary DataFrame table. Plots a multi-line chart with precision (steelblue), recall (salmon), F1 (seagreen), and approval rate (gray dashed). Legend at lower right.
 
+10. `generate_reason_codes(model, arr_X, list_feature_cols, int_top_n=4, str_filename)` - Generates SHAP-based adverse action reason codes per applicant (regulatory requirement under ECOA/CFPB). Uses `shap.TreeExplainer` to compute SHAP values, then for each observation selects the top N features with positive SHAP values (pushing toward default). Maps feature names to consumer-facing reason descriptions via `dict_reason_map`. Displays a DataFrame of the top 10 highest-risk applicants with their top 4 reason codes. Plots a horizontal bar chart of reason frequency (% of applicants) using steelblue bars with black edgecolor. Returns `list_reasons` (list of lists of reason strings per applicant).
+
 ### Constants Cell
 
 ```python
@@ -106,3 +108,7 @@ Markdown: explains this is standard in credit risk for evaluating rank-ordering 
 #### Threshold Sensitivity Analysis
 Markdown: explains that the optimal cutoff depends on the cost of false positives vs false negatives and varies by business use case. Shows precision, recall, F1, and approval rate across thresholds.
 - `plot_threshold_analysis(arr_y_test, arr_pred_test)`
+
+#### Adverse Action Reason Codes
+Markdown: explains that under ECOA and CFPB guidance, lenders must provide specific, accurate reasons when taking adverse action. SHAP values identify the top features pushing each applicant toward default, mapped to consumer-facing descriptions. Top 4 reasons per applicant.
+- `list_reason_codes = generate_reason_codes(model, df_test[list_feature_cols].values, list_feature_cols)`

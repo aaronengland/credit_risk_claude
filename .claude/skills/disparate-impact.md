@@ -98,8 +98,8 @@ Markdown: with small sample sizes, point estimates can be misleading and bootstr
 - State whether the CI for the difference includes zero (not statistically significant if yes)
 
 #### Age Proxy Model
-Markdown: train XGBoost to predict age group using credit model features to identify proxy variables.
-- Quick XGBoost (100 trees, depth 4) to predict age group
+Markdown: train XGBoost to predict age group using credit model features to identify proxy variables. Note that this proxy model is trained and scored on the same data, so the AUC is an upper-bound estimate. In production, cross-validation should be used for a more conservative estimate.
+- Quick XGBoost (100 trees, depth 4, random_state=42) to predict age group
 - Print proxy model AUC
 
 #### Age Proxy vs Credit Risk Feature Importance
