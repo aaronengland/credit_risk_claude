@@ -22,6 +22,8 @@
 
 ---
 
+<h2 align="center">Continuous Feedback Loop</h2>
+
 <p align="center">
   <img src="img/review_cycle.png" alt="Review Cycle" width="500"/>
 </p>
