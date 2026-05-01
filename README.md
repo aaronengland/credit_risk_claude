@@ -5,6 +5,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 ## Table of Contents
 
 - [Project Overview](#project-overview)
+- [Getting Started](#getting-started)
 - [1. Exploratory Data Analysis](#1-exploratory-data-analysis)
 - [2. Data Split](#2-data-split)
 - [3. Preprocessing](#3-preprocessing)
@@ -12,6 +13,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 - [5. Model Evaluation](#5-model-evaluation)
 - [6. Disparate Impact](#6-disparate-impact)
 - [7. API](#7-api)
+- [Claude Code Skills](#claude-code-skills)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
 
@@ -20,6 +22,40 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 This project builds a credit risk model to predict the probability of a borrower defaulting within 12 months (`default_12m`). The model uses XGBoost with Bayesian hyperparameter tuning and monotone constraints for regulatory compliance. Data is sourced from S3, and the final model is served via a FastAPI application packaged in a Docker container.
 
 The dataset contains 25,308 loan records spanning January 2022 through December 2024 with 20 columns and an overall default rate of 18.7%.
+
+## Getting Started
+
+This repository is a **reusable Model Validation framework** powered by Claude Code skills. Any data scientist can replicate the entire modeling process for a new dataset by following these steps:
+
+### For a New Model
+
+1. Clone this repository
+2. Place your raw data in S3 at `s3://{bucket}/00_data_collection/data.csv`
+3. Open Claude Code in the repository
+4. Run `/create-folder-structure` to scaffold the project
+5. Adjust constants in each notebook (target variable, date column, excluded columns, monotone constraints)
+6. Run each skill individually (`/eda`, `/data-split`, `/preprocessing`, `/model`, `/model-eval`, `/disparate-impact`, `/deployment`) or run `/run-all`
+7. Execute each notebook on your compute environment (e.g., SageMaker)
+8. Run `/documentation` to auto-generate the comprehensive README
+
+### What Claude Knows Automatically
+
+The `CLAUDE.md` file encodes all team standards so Claude follows them without being told:
+
+- **Notebook structure**: imports, functions (one per cell), constants, analysis sections with `####` headers
+- **Variable naming**: type-prefixed (`str_`, `df_`, `flt_`, `int_`, etc.)
+- **Plotting standards**: color palette, label padding, legend placement, DPI
+- **Credit risk domain rules**: out-of-time splits, monotone constraints, leakage prevention, ECOA compliance, calibration requirements
+- **Preprocessing rules**: never drop columns, fit only on training data, save pipeline immediately
+- **S3 data flow**: consistent path conventions between steps
+
+### Why This Matters
+
+- **Consistency**: every model follows the same validated framework
+- **Speed**: a full model build that might take weeks is scaffolded in minutes
+- **Compliance**: fair lending analysis, monotone constraints, and leakage prevention are built in
+- **Documentation**: comprehensive stakeholder-ready README generated automatically
+- **Auditability**: every decision is documented with rationale in the notebooks
 
 ---
 
@@ -371,6 +407,25 @@ curl -X POST http://localhost:8080/predict \
 ### Logging
 
 The API includes structured logging with the format `timestamp | level | message`. Each prediction request logs the loan_id, predicted probability of default, and elapsed time for monitoring and auditability.
+
+---
+
+## Claude Code Skills
+
+This project uses Claude Code skills to automate each step of the modeling workflow. Skills can be invoked independently or run sequentially with `/run-all`.
+
+| Skill | Description |
+|-------|-------------|
+| `/create-folder-structure` | Scaffold project directories and template notebooks |
+| `/eda` | Populate EDA notebook with top-down analysis |
+| `/data-split` | Populate data split notebook with out-of-time splitting |
+| `/preprocessing` | Populate preprocessing notebook with sklearn pipeline |
+| `/model` | Populate model notebook with Bayesian tuning and XGBoost |
+| `/model-eval` | Populate model evaluation notebook with metrics and plots |
+| `/disparate-impact` | Populate disparate impact notebook with fair lending analysis |
+| `/deployment` | Populate API notebook with FastAPI, Dockerfile, and Docker build |
+| `/documentation` | Generate comprehensive README with all plots and tables |
+| `/run-all` | Execute all skills sequentially |
 
 ---
 
