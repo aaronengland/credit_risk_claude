@@ -6,6 +6,8 @@
 
 A credit risk modeling project built with Claude Code, demonstrating an end-to-end machine learning workflow from exploratory data analysis through post-deployment monitoring.
 
+**How does this automate underwriting model validation?** This repository contains 12 Claude Code skills that encode every step of the model validation lifecycle into repeatable, invocable commands. Pre-deployment, Claude automates EDA, data splitting, preprocessing, model training with regulatory constraints, performance evaluation, fair lending analysis, and API deployment. Post-deployment, Claude automates population stability monitoring (PSI/CSI), discrimination and calibration tracking over time, and champion-challenger analysis for model replacement decisions. A data scientist clones this repo, points it at a new dataset, and Claude builds the entire validation framework following the team's standards, producing stakeholder-ready documentation automatically. No tribal knowledge required, no inconsistency between analysts, and full auditability from day one.
+
 ## Table of Contents
 
 - [Claude Code Skills](#claude-code-skills)
