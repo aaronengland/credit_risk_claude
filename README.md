@@ -406,13 +406,15 @@ The following metrics are used to assess model performance. Each captures a diff
 | **PR AUC** | Area under the precision-recall curve | Evaluates performance on the minority class (defaults); important because AUC can be optimistic when defaults are rare |
 | **Brier** | Mean squared error between predicted probabilities and actual outcomes | Validates calibration, which is critical because predicted probabilities are used directly for loan pricing, loss reserving, and capital allocation |
 | **Median Pred** | Median predicted probability of default | Sanity check that the model's central tendency aligns with the observed default rate; large deviations indicate systematic bias |
+| **Mean Pred** | Mean predicted probability of default | Should approximate the actual default rate if the model is well-calibrated; divergence signals systematic over- or under-prediction |
+| **Target Mean** | Actual observed default rate | Baseline for comparing predicted values; included alongside predictions for direct calibration comparison |
 
 ### Metrics Summary
 
-| Split | AUC | Gini | KS | PR AUC | Brier | Median Pred |
-|-------|-----|------|-----|--------|-------|-------------|
-| Train+Valid | 0.8153 | 0.6307 | 0.4741 | 0.5376 | 0.1177 | 0.1296 |
-| Test | 0.8026 | 0.6052 | 0.4782 | 0.4813 | 0.1199 | 0.1324 |
+| Split | AUC | Gini | KS | PR AUC | Brier | Median Pred | Mean Pred | Target Mean |
+|-------|-----|------|-----|--------|-------|-------------|-----------|-------------|
+| Train+Valid | 0.8153 | 0.6307 | 0.4741 | 0.5376 | 0.1177 | 0.1296 | 0.1869 | 0.1875 |
+| Test | 0.8026 | 0.6052 | 0.4782 | 0.4813 | 0.1199 | 0.1324 | 0.1867 | 0.1825 |
 
 Key observations:
 - **AUC** of 0.80 on the out-of-time test set indicates the model generalizes well.
@@ -420,6 +422,7 @@ Key observations:
 - **KS** of 0.48 on test shows good separation between defaulters and non-defaulters.
 - **Brier score** is consistent between in-sample and out-of-time (~0.12), indicating stable calibration.
 - **Median prediction** is consistent (~0.13), close to the population default rate.
+- **Mean prediction** closely matches the actual default rate on both splits (18.7% predicted vs 18.8% actual on Train+Valid, 18.7% vs 18.3% on Test), confirming the model is well-calibrated in aggregate.
 
 ### ROC Curves
 

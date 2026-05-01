@@ -32,7 +32,7 @@ from scipy.stats import ks_2samp
 
 One function per code cell, ordered to match execution order.
 
-1. `compute_metrics(arr_y_true, arr_y_pred)` - Returns dict with: `flt_auc`, `flt_gini` (2*AUC-1), `flt_ks` (KS statistic), `flt_pr_auc` (average precision), `flt_brier` (Brier score), `flt_median_pred` (median predicted probability).
+1. `compute_metrics(arr_y_true, arr_y_pred)` - Returns dict with: `flt_auc`, `flt_gini` (2*AUC-1), `flt_ks` (KS statistic), `flt_pr_auc` (average precision), `flt_brier` (Brier score), `flt_median_pred` (median predicted probability), `flt_mean_pred` (mean predicted probability), `flt_target_mean` (actual default rate).
 
 2. `plot_roc_curves(dict_splits, str_filename)` - ROC curves for all splits. AUC in legend per split. Colors: steelblue, salmon, seagreen.
 
@@ -71,7 +71,7 @@ One function per code cell, ordered to match execution order.
 #### Metrics Summary
 Markdown: explains AUC, Gini, KS, PR AUC, Brier, median prediction. Notes that the model was trained on combined train+valid data, so Train+Valid metrics reflect in-sample performance while Test is the true out-of-time holdout.
 - `compute_metrics` for each split
-- Build `df_metrics` with columns: str_split, flt_auc, flt_gini, flt_ks, flt_pr_auc, flt_brier, flt_median_pred
+- Build `df_metrics` with columns: str_split, flt_auc, flt_gini, flt_ks, flt_pr_auc, flt_brier, flt_median_pred, flt_mean_pred, flt_target_mean
 - Save to `output/metrics_summary.csv`
 
 #### ROC Curves
