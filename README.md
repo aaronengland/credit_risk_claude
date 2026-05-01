@@ -719,6 +719,57 @@ The challenger (SVM) does not improve over the champion (XGBoost) on either disc
 
 ---
 
+## Advisory Panel Review (2026-05-01)
+
+The advisory panel conducted a full project review. The complete meeting notes are in [`advisory-panel/meetings/2026-05-01-project-review.md`](advisory-panel/meetings/2026-05-01-project-review.md).
+
+### What the Panel Liked
+
+- **Out-of-time split methodology** with stable target means across splits (17.7%-19.0%)
+- **Monotone constraints with documented rationale** for every feature, confirmed by SHAP PDP plots
+- **Well-calibrated probabilities** without post-hoc adjustment; mean predicted PD tracks actual default rate within 0.4 percentage points on the test set
+- **Thorough leakage prevention** with clear exclusion rationale; columns kept through preprocessing and excluded only at the model step
+- **Learned parameters transparency** so validators can audit imputation values and encoding mappings without deserializing the pipeline
+- **Comprehensive monitoring suite** covering PSI, CSI, target drift, AUC/Brier over time, and KDE distributions
+- **Skills-based automation** encoding the entire model lifecycle into repeatable, invocable commands
+- **Proxy analysis in disparate impact** using a separate model to detect indirect discrimination through age-correlated features
+
+### Key Opportunities
+
+| Priority | Finding | Raised By |
+|----------|---------|-----------|
+| High | `FeatureEngineer` uses `pd.Timestamp.now()` for age, causing train-serve skew over time | Sean, Aaron, Cameron, Colby |
+| High | Age proxy AUC of 0.98 needs deeper investigation with bootstrap CIs (60+ group n=107 limits statistical power) | Michael, John, Cameron |
+| High | Model notebook markdown incorrectly references `scale_pos_weight` being used | John, Cameron, Colby |
+| High | Champion-challenger uses untuned SVM (strawman); replace with tuned logistic regression | Michael, John, Cameron |
+| Medium | No data quality validation or schema checks at any pipeline stage | Sean |
+| Medium | `open_trades` has no monotone constraint without documented rationale | Michael, John, Cameron, Colby |
+| Medium | No decile/score-band analysis in model evaluation | Cameron, Colby |
+| Medium | Confusion matrix at 0.5 threshold is misleading for ~19% base rate | John, Cameron |
+| Medium | No adverse action reason code analysis for regulatory compliance | Michael |
+
+### Recommended Next Steps
+
+**Immediate:**
+1. Fix `FeatureEngineer` age calculation to use a fixed reference date
+2. Correct stale `scale_pos_weight` documentation
+3. Document rationale for `open_trades` constraint and `state` exclusion
+
+**Short-Term:**
+4. Add bootstrap CIs to disparate impact analysis
+5. Replace SVM challenger with tuned logistic regression
+6. Add decile/score-band and threshold sensitivity analyses
+7. Add data contract validation at pipeline entry points
+8. Investigate dirty state values ("00", "??", "xx")
+
+**Medium-Term:**
+9. Build SHAP-based adverse action reason codes
+10. Expand disparate impact to race/ethnicity (BISG proxy) and sex
+11. Add model risk tiering and conceptual soundness documentation
+12. Implement model versioning and CI/CD pipeline
+
+---
+
 ## Tech Stack
 
 - **Language:** Python 3.11+
@@ -759,6 +810,9 @@ credit_risk_claude/
 │   └── output/              # Comparison metrics and plots
 ├── api/                     # Model serving
 │   └── notebook.ipynb       # Creates all API artifacts via %%writefile
+├── advisory-panel/          # Advisory panel personas and meeting notes
+│   ├── meetings/            # Documented panel reviews and discussions
+│   └── *.md                 # Panel member profiles
 ├── .claude/
 │   └── skills/              # Claude Code skills for each step
 └── README.md
