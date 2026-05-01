@@ -104,6 +104,11 @@ Markdown: explains fitting on training data only to prevent data leakage.
 #### Save (pipeline)
 - `joblib.dump(pipeline, 'output/preprocessing_pipeline.joblib')` immediately after fitting
 
+#### Learned Parameters
+Markdown: explains that inspecting the fitted pipeline's learned parameters increases transparency and auditability, allowing stakeholders to answer questions like "what value was imputed for bureau_score?"
+- Extract the numeric `SimpleImputer` from the fitted pipeline and display a DataFrame of each numeric feature and its learned median value, sorted by column name.
+- Extract the `OrdinalEncoder` from the fitted pipeline and display the category-to-integer mapping for each categorical feature.
+
 #### Transform
 - Transform all three splits using fitted pipeline
 - Reconstruct DataFrames with proper column names
