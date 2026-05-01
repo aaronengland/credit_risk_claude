@@ -352,7 +352,7 @@ The following columns are excluded from the model features:
 | `apr` | Not known at time of application |
 | `flt_payment_to_income` | Derived from apr, not known at application |
 | `int_age` | Excluded for fair lending / ECOA compliance |
-| `state` | Excluded from model |
+| `state` | Excluded to avoid geographic discrimination concerns and sparse high-cardinality encoding |
 
 ### Monotone Constraints
 
@@ -369,12 +369,13 @@ Monotone constraints are applied to ensure the model's predictions move in the e
 | stated_income | -1 | Higher income = lower risk |
 | loan_amount | +1 | Larger loans = higher risk |
 | term_months | +1 | Longer terms = higher risk |
+| open_trades | 0 | Could go either way; more trades could indicate credit experience (lower risk) or over-extension (higher risk) |
 | has_prior_loans_with_us | 0 | Could go either way |
 | channel | 0 | Categorical, no natural ordering |
 
 ### Bayesian Hyperparameter Tuning
 
-Bayesian optimization via Optuna (50 trials) is used instead of grid or random search because it models the objective function and intelligently explores the hyperparameter space, converging on good configurations faster. The objective function maximizes ROC AUC on the validation set, as AUC is the standard discrimination metric for credit risk models and is threshold-independent. Early stopping on the validation set determines the optimal number of boosting rounds during tuning.
+Bayesian optimization via Optuna (100 trials) is used instead of grid or random search because it models the objective function and intelligently explores the hyperparameter space, converging on good configurations faster. The objective function maximizes ROC AUC on the validation set, as AUC is the standard discrimination metric for credit risk models and is threshold-independent. Early stopping on the validation set determines the optimal number of boosting rounds during tuning.
 
 No sample weights or `scale_pos_weight` are used. The model is trained on the natural class distribution (~19% default rate), which produces well-calibrated probability estimates without requiring post-hoc calibration.
 
@@ -484,6 +485,8 @@ The prediction distributions are nearly identical between Train+Valid and Test, 
 ### Confusion Matrix (Test Set)
 
 ![Confusion Matrix](05_model_eval/output/confusion_matrix.png)
+
+Note: This confusion matrix uses a default threshold of 0.5, which is not a recommended operating point for a portfolio with a ~19% base rate. See the [Threshold Sensitivity Analysis](#threshold-sensitivity-analysis) below for business-relevant cutoffs.
 
 ### SHAP Partial Dependence Plots
 
@@ -837,7 +840,7 @@ After implementing the panel's initial feedback, a follow-up review was conducte
 | Bootstrap CIs on disparate impact | FIXED - 95% CI includes zero, properly inconclusive |
 | open_trades constraint rationale | FIXED |
 | Data contract validation | FIXED - schema checks in preprocessing and model notebooks |
-| state exclusion rationale | PARTIALLY FIXED - documented in notebook, not yet in README table |
+| state exclusion rationale | FIXED |
 
 ### New Findings
 
@@ -845,7 +848,6 @@ After implementing the panel's initial feedback, a follow-up review was conducte
 |----------|---------|-----------|
 | High | Champion trained on train+valid but challenger trained on train only (data asymmetry) | Michael, John, Cameron |
 | High | Decile cumulative capture rate computed in wrong direction (should be top-down) | Cameron, Colby |
-| Medium | README says "50 trials" but notebook runs 100 | John, Colby |
 | Medium | No random seeds for Optuna or XGBoost (reproducibility) | Colby |
 | Medium | FeatureEngineer reference date not surfaced in learned parameters | Aaron |
 | Medium | API build artifacts deleted after Docker build | Aaron |
@@ -855,9 +857,8 @@ After implementing the panel's initial feedback, a follow-up review was conducte
 
 **Immediate:**
 1. Fix FeatureEngineer to use deterministic reference date (e.g., max origination_date)
-2. Fix README: "50 trials" to "100 trials", add state exclusion rationale to feature table
-3. Fix decile capture rate direction (accumulate from highest-risk decile)
-4. Train challenger on combined train+valid for fair comparison
+2. Fix decile capture rate direction (accumulate from highest-risk decile)
+3. Train challenger on combined train+valid for fair comparison
 
 **Short-Term:**
 5. Add narrative interpretation of age proxy model findings
