@@ -24,21 +24,44 @@ One function per code cell, ordered to match execution order.
 
 4. `plot_calibration_comparison(arr_y_true, dict_models, int_n_bins=10, str_filename)` - Overlaid calibration plots with Brier in legend.
 
-5. `plot_metric_comparison(df_metrics, str_metric, str_title, str_filename)` - Bar chart comparing a metric between models.
+5. `plot_metric_comparison(df_metrics, str_metric, str_title, str_filename)` - Bar chart comparing a metric between models with values annotated. Y-axis padded.
 
 ### Constants
 
-- Champion model path and feature columns (current production model)
-- Challenger model path and feature columns (new candidate model)
-- Both evaluated on the same test set
+- Champion model path: `../04_model/output/xgboost_model.joblib`
+- Champion feature cols: `../04_model/output/feature_cols.joblib`
+- Challenger is trained inline (not loaded from file)
 
 ### Analysis Sections
 
-- Read test data, load both models
-- Generate predictions from both on same test set
-- Metrics comparison table (AUC, Gini, KS, Brier, median pred), saved to CSV
-- AUC, Gini, KS bar chart comparisons
-- ROC curve comparison
-- Calibration comparison with Brier in legend
-- KDE comparison with median in legend
-- Automated recommendation: logic based on AUC and Brier improvement/degradation with clear recommendation text
+#### Read Data and Models
+- Read train and test clean data from S3
+- Load champion XGBoost model and feature columns
+
+#### Train Challenger Model
+Markdown: explains challenger is an untuned SVM with RBF kernel + StandardScaler pipeline, serving as a baseline comparison.
+- Train `Pipeline([StandardScaler, SVC(kernel='rbf', probability=True)])` on training data
+
+#### Generate Predictions
+- Score both models on the same out-of-time test set
+- Build `dict_models` with `'Champion (XGBoost)'` and `'Challenger (SVM)'` keys
+
+#### Metrics Comparison
+- Compute AUC, Gini, KS, Brier, median pred for both
+- Save to `output/champion_challenger_metrics.csv`
+
+#### AUC, Gini, KS Comparisons
+- Bar charts for each metric
+
+#### ROC Comparison
+- Overlaid ROC curves with AUC in legend
+
+#### Calibration Comparison
+- Overlaid calibration plots with Brier in legend
+
+#### KDE Comparison
+- Overlaid KDE with median in legend
+
+#### Recommendation
+- Automated logic based on AUC and Brier deltas
+- Prints delta for each metric and a clear recommendation (promote, review, or retain)
