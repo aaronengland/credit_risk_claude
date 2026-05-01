@@ -11,8 +11,6 @@
   &nbsp;&nbsp;&nbsp;
   <img src="img/Scikit_learn_logo_small.svg.png" alt="scikit-learn" height="40"/>
   &nbsp;&nbsp;&nbsp;
-  <img src="img/optuna-logo.png" alt="Optuna" height="40"/>
-  &nbsp;&nbsp;&nbsp;
   <img src="img/Amazon_Web_Services_Logo.svg.png" alt="AWS" height="40"/>
   &nbsp;&nbsp;&nbsp;
   <img src="img/logo-teal.png" alt="FastAPI" height="40"/>
