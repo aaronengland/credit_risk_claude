@@ -236,7 +236,7 @@ The pipeline is structured in two stages:
 
 2. **Column Transformer**: applies different preprocessing to numeric vs. categorical features:
    - **Numeric (median imputation):** median is preferred over mean because credit risk data often has skewed distributions (e.g., income, loan amounts), and the median is robust to outliers. No scaling is applied because XGBoost is a tree-based algorithm that is invariant to monotonic transformations.
-   - **Categorical (constant imputation + ordinal encoding):** missing values are filled with "missing" as its own category, since missingness can be informative in credit risk (e.g., missing employment length may indicate informal employment). Ordinal encoding is preferred over one-hot encoding for XGBoost because it avoids creating high-dimensional sparse features and XGBoost can learn effective splits on ordinal values. The integer assignments are purely alphabetical and do not consider the target variable, which avoids the leakage risk associated with target encoding. XGBoost handles the arbitrary ordering by learning its own splits on these values. Unknown categories at inference time are encoded as -1.
+   - **Categorical (text standardization + constant imputation + ordinal encoding):** text values are first lowercased and stripped of whitespace to prevent duplicate categories caused by inconsistent casing (e.g., "Mobile" vs "mobile"). Missing values are then filled with "missing" as its own category, since missingness can be informative in credit risk (e.g., missing employment length may indicate informal employment). Ordinal encoding is preferred over one-hot encoding for XGBoost because it avoids creating high-dimensional sparse features and XGBoost can learn effective splits on ordinal values. The integer assignments are purely alphabetical and do not consider the target variable, which avoids the leakage risk associated with target encoding. XGBoost handles the arbitrary ordering by learning its own splits on these values. Unknown categories at inference time are encoded as -1.
 
 ### Learned Parameters
 
@@ -357,9 +357,13 @@ Monotone constraints are applied to ensure the model's predictions move in the e
 
 ### Bayesian Hyperparameter Tuning
 
-Bayesian optimization via Optuna (50 trials) is used instead of grid or random search because it models the objective function and intelligently explores the hyperparameter space, converging on good configurations faster. Early stopping on the validation set prevents overfitting and automatically determines the optimal number of boosting rounds.
+Bayesian optimization via Optuna (50 trials) is used instead of grid or random search because it models the objective function and intelligently explores the hyperparameter space, converging on good configurations faster. Early stopping on the validation set determines the optimal number of boosting rounds during tuning.
 
 No sample weights or `scale_pos_weight` are used. The model is trained on the natural class distribution (~19% default rate), which produces well-calibrated probability estimates without requiring post-hoc calibration.
+
+### Final Model Training
+
+After tuning, the final model is trained on the combined training and validation data to maximize the amount of data available for learning. The optimal number of boosting rounds (`n_estimators`) is set to `best_iteration` from the tuning phase, which was determined via early stopping on the validation set. Since the number of rounds is now fixed, no early stopping or holdout set is needed for the final fit. The test set remains completely untouched.
 
 ### Best Hyperparameters
 
@@ -388,26 +392,27 @@ Bureau score, utilization, and employment length are the most important features
 
 ## 5. Model Evaluation
 
+The model was trained on combined train+valid data, so Train+Valid metrics reflect in-sample performance while Test is the true out-of-time holdout.
+
 ### Metrics Summary
 
 | Split | AUC | Gini | KS | PR AUC | Brier | Median Pred |
 |-------|-----|------|-----|--------|-------|-------------|
-| Train | 0.8158 | 0.6317 | 0.4738 | 0.5342 | 0.1191 | 0.1286 |
-| Validation | 0.7843 | 0.5686 | 0.4297 | 0.4805 | 0.1196 | 0.1302 |
-| Test | 0.8016 | 0.6032 | 0.4648 | 0.4815 | 0.1200 | 0.1293 |
+| Train+Valid | 0.8153 | 0.6307 | 0.4741 | 0.5376 | 0.1177 | 0.1296 |
+| Test | 0.8026 | 0.6052 | 0.4782 | 0.4813 | 0.1199 | 0.1324 |
 
 Key observations:
-- **AUC** is stable across splits (0.78-0.82), indicating the model generalizes well to out-of-time data.
-- **Gini** of 0.60 on the test set is a strong result for a credit risk model.
-- **KS** of 0.46 on test shows good separation between defaulters and non-defaulters.
-- **Brier score** is consistent across splits (~0.12), indicating stable calibration.
+- **AUC** of 0.80 on the out-of-time test set indicates the model generalizes well.
+- **Gini** of 0.61 on test is a strong result for a credit risk model.
+- **KS** of 0.48 on test shows good separation between defaulters and non-defaulters.
+- **Brier score** is consistent between in-sample and out-of-time (~0.12), indicating stable calibration.
 - **Median prediction** is consistent (~0.13), close to the population default rate.
 
 ### ROC Curves
 
 ![ROC Curves](05_model_eval/output/roc_curves.png)
 
-All three splits show strong discrimination with AUC values above 0.78. The test curve closely tracks the training curve, confirming no significant overfitting.
+Both splits show strong discrimination with AUC values above 0.80. The test curve closely tracks the training curve, confirming no significant overfitting.
 
 ### Precision-Recall Curves
 
@@ -417,13 +422,13 @@ All three splits show strong discrimination with AUC values above 0.78. The test
 
 ![Calibration](05_model_eval/output/calibration.png)
 
-Calibration measures how well the predicted probabilities match actual default rates. Points close to the diagonal indicate good calibration. This is critical for credit risk because predicted probabilities are used directly for pricing and capital allocation. The model shows good calibration across all splits without requiring post-hoc calibration.
+Calibration measures how well the predicted probabilities match actual default rates. Points close to the diagonal indicate good calibration. This is critical for credit risk because predicted probabilities are used directly for pricing and capital allocation. The model shows good calibration without requiring post-hoc calibration.
 
 ### KDE of Predictions
 
 ![KDE Predictions](05_model_eval/output/kde_predictions.png)
 
-The prediction distributions are nearly identical across train, validation, and test sets, indicating stable model behavior and no evidence of overfitting or data drift.
+The prediction distributions are nearly identical between Train+Valid and Test, indicating stable model behavior and no evidence of overfitting or data drift.
 
 ### Confusion Matrix (Test Set)
 
@@ -445,18 +450,16 @@ Under ECOA (Equal Credit Opportunity Act), age is a protected class. Although `i
 
 | Group | N | Target Mean | Pred Mean | Pred Median | AUC |
 |-------|---|-------------|-----------|-------------|-----|
-| <60 | 3,690 | 18.32% | 18.81% | 0.1292 | 0.8031 |
-| >=60 | 107 | 15.89% | 18.45% | 0.1293 | 0.7340 |
+| <60 | 3,690 | 18.32% | 18.65% | 0.1323 | 0.8038 |
+| >=60 | 107 | 15.89% | 18.22% | 0.1359 | 0.7458 |
 
-The median predicted probability is nearly identical between groups (0.1292 vs 0.1293), suggesting no systematic bias in predictions. The AUC difference is partly attributable to the small sample size of the 60+ group (n=107).
+The median predicted probability is nearly identical between groups (0.1323 vs 0.1359), suggesting no systematic bias in predictions. The AUC difference is partly attributable to the small sample size of the 60+ group (n=107).
 
-### Mean Predicted Probability by Age Group
+### Median Predicted PD vs Actual Default Rate by Age Group
 
-![Pred Mean by Age](06_disparate_impact/output/pred_mean_by_age.png)
+![Pred vs Actual by Age](06_disparate_impact/output/pred_vs_actual_by_age.png)
 
-### Actual Default Rate by Age Group
-
-![Target Mean by Age](06_disparate_impact/output/target_mean_by_age.png)
+This grouped bar chart shows the median predicted probability of default alongside the actual default rate for each age group. Both metrics are similar across groups, indicating the model is not systematically over- or under-predicting for either age group.
 
 ### AUC by Age Group
 
@@ -560,9 +563,9 @@ Post-deployment monitoring tracks model performance and population stability ove
 
 | Metric | Value |
 |--------|-------|
-| Overall PSI | 0.0011 (no significant shift) |
-| Baseline Median PD | 0.1286 |
-| Production Median PD | 0.1293 |
+| Overall PSI | 0.0003 (no significant shift) |
+| Baseline Median PD | 0.1295 |
+| Production Median PD | 0.1324 |
 | Baseline Target Mean | 18.98% |
 | Production Target Mean | 18.25% |
 | Features with Moderate CSI | 0 |
@@ -572,7 +575,7 @@ Post-deployment monitoring tracks model performance and population stability ove
 
 ![PSI Trend](07_monitoring/output/psi_trend.png)
 
-PSI measures how much the distribution of predicted probabilities has shifted from the development population. Training months (left of black line) serve as a control and should show near-zero PSI. An overall PSI of 0.0011 indicates no meaningful population shift.
+PSI measures how much the distribution of predicted probabilities has shifted from the development population. Training months (left of black line) serve as a control and should show near-zero PSI. An overall PSI of 0.0003 indicates no meaningful population shift.
 
 ### CSI by Feature
 
@@ -632,8 +635,8 @@ The champion-challenger framework compares the current production model against 
 
 | Model | AUC | Gini | KS | Brier | Median Pred |
 |-------|-----|------|-----|-------|-------------|
-| Champion (XGBoost) | 0.8016 | 0.6032 | 0.4648 | 0.1200 | 0.1293 |
-| Challenger (SVM) | 0.7480 | 0.4961 | 0.4462 | 0.1270 | 0.1380 |
+| Champion (XGBoost) | 0.8026 | 0.6052 | 0.4782 | 0.1199 | 0.1324 |
+| Challenger (SVM) | 0.7514 | 0.5029 | 0.4495 | 0.1270 | 0.1383 |
 
 The champion outperforms the challenger across all metrics: better discrimination (AUC, Gini, KS) and better calibration (Brier).
 
