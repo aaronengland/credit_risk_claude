@@ -44,6 +44,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
   - [8. Monitoring](#8-monitoring)
   - [9. Champion-Challenger](#9-champion-challenger)
 - [Advisory Panel Review (2026-05-01)](#advisory-panel-review-2026-05-01)
+- [Advisory Panel Follow-Up Review (2026-05-01)](#advisory-panel-follow-up-review-2026-05-01)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
 
@@ -818,6 +819,57 @@ The advisory panel conducted a full project review. The complete meeting notes a
 10. Expand disparate impact to race/ethnicity (BISG proxy) and sex
 11. Add model risk tiering and conceptual soundness documentation
 12. Implement model versioning and CI/CD pipeline
+
+---
+
+## Advisory Panel Follow-Up Review (2026-05-01)
+
+After implementing the panel's initial feedback, a follow-up review was conducted. Full notes: [`advisory-panel/meetings/2026-05-01-follow-up-review.md`](advisory-panel/meetings/2026-05-01-follow-up-review.md).
+
+### What Was Fixed
+
+| Finding | Status |
+|---------|--------|
+| scale_pos_weight doc mismatch | FIXED |
+| SVM strawman challenger | FIXED - replaced with tuned logistic regression (AUC delta 0.008) |
+| Decile/score-band analysis | FIXED - monotonically increasing default rates 1.6% to 57.4% |
+| Threshold sensitivity analysis | FIXED - precision/recall/F1/approval rate at six thresholds |
+| Bootstrap CIs on disparate impact | FIXED - 95% CI includes zero, properly inconclusive |
+| open_trades constraint rationale | FIXED |
+| Data contract validation | FIXED - schema checks in preprocessing and model notebooks |
+| state exclusion rationale | PARTIALLY FIXED - documented in notebook, not yet in README table |
+
+### New Findings
+
+| Priority | Finding | Raised By |
+|----------|---------|-----------|
+| High | Champion trained on train+valid but challenger trained on train only (data asymmetry) | Michael, John, Cameron |
+| High | Decile cumulative capture rate computed in wrong direction (should be top-down) | Cameron, Colby |
+| Medium | README says "50 trials" but notebook runs 100 | John, Colby |
+| Medium | No random seeds for Optuna or XGBoost (reproducibility) | Colby |
+| Medium | FeatureEngineer reference date not surfaced in learned parameters | Aaron |
+| Medium | API build artifacts deleted after Docker build | Aaron |
+| Medium | Dependency versions not pinned in requirements.txt | Aaron |
+
+### Remaining Next Steps
+
+**Immediate:**
+1. Fix FeatureEngineer to use deterministic reference date (e.g., max origination_date)
+2. Fix README: "50 trials" to "100 trials", add state exclusion rationale to feature table
+3. Fix decile capture rate direction (accumulate from highest-risk decile)
+4. Train challenger on combined train+valid for fair comparison
+
+**Short-Term:**
+5. Add narrative interpretation of age proxy model findings
+6. Investigate dirty state values ("00", "??", "xx")
+7. Add random seeds to Optuna and XGBoost
+8. Surface FeatureEngineer reference date in learned parameters
+
+**Medium-Term:**
+9. Build SHAP-based adverse action reason codes
+10. Add API input validation and model versioning
+11. Pin dependency versions and persist API build artifacts
+12. Stand up operational monitoring with alerting
 
 ---
 
