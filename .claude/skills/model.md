@@ -86,11 +86,13 @@ Markdown: explains Bayesian optimization efficiency, early stopping, no weights 
 - `plot_optimization_history(study)`
 
 #### Train Final Model
-Markdown: explains retraining with best hyperparameters and monotone constraints.
-- Train XGBoost with best params, monotone constraints, early stopping on validation
+Markdown: explains that the final model is trained on combined train + validation data to maximize learning. The optimal number of boosting rounds (`n_estimators`) is set to `best_iteration` from the tuning phase (determined via early stopping on validation). Since the number of rounds is fixed, no early stopping or holdout is needed. The test set remains untouched.
+- Reconstruct best trial model with early stopping on validation to get `best_iteration`
+- Combine `arr_X_train` + `arr_X_valid` into `arr_X_combined`, same for targets
+- Train final XGBoost with best params, monotone constraints, and `n_estimators=int_best_iteration` (no early stopping)
 
 #### Feature Importance
-- `plot_feature_importance(model, arr_X_train, list_feature_cols)` - grouped gain/SHAP chart
+- `plot_feature_importance(model, arr_X_combined, list_feature_cols)` - grouped gain/SHAP chart
 
 #### Save
 - Save model to `output/xgboost_model.joblib`
