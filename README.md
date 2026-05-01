@@ -47,6 +47,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
   - [9. Champion-Challenger](#9-champion-challenger)
 - [Advisory Panel Review (2026-05-01)](#advisory-panel-review-2026-05-01)
 - [Advisory Panel Follow-Up Review (2026-05-01)](#advisory-panel-follow-up-review-2026-05-01)
+- [Advisory Panel Third Review (2026-05-01)](#advisory-panel-third-review-2026-05-01)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
 
@@ -873,6 +874,42 @@ After implementing the panel's initial feedback, a follow-up review was conducte
 10. Add API input validation and model versioning
 11. Pin dependency versions and persist API build artifacts
 12. Stand up operational monitoring with alerting
+
+---
+
+## Advisory Panel Third Review (2026-05-01)
+
+The panel conducted a third review after implementation of the follow-up feedback. Full notes: [`advisory-panel/meetings/2026-05-01-third-review.md`](advisory-panel/meetings/2026-05-01-third-review.md).
+
+### What Was Fixed
+
+| Finding | Status |
+|---------|--------|
+| FeatureEngineer deterministic reference date | FIXED - uses `max(origination_date)` from training data (2024-02-02) |
+| Reference date surfaced in learned parameters | FIXED |
+| Random seeds (Optuna + XGBoost) | FIXED - `seed=42` throughout |
+| MLflow model versioning | FIXED - logs params, metrics, model, artifacts |
+| Challenger trained on combined train+valid | FIXED - eliminates data asymmetry |
+| Decile capture rate direction | FIXED - decile 1 = highest risk, top-down |
+| API input validation | FIXED - Pydantic Field constraints |
+| Readiness health check | FIXED - dummy prediction in `/health` |
+
+### Panel Assessment
+
+The core modeling methodology is now sound: deterministic preprocessing, reproducible tuning, well-calibrated probabilities, proper out-of-time validation, and fair champion-challenger comparison. MLflow integration and API input validation close real governance gaps.
+
+### Remaining Items for Production
+
+| Priority | Item |
+|----------|------|
+| High | Build SHAP-based adverse action reason codes (regulatory requirement) |
+| High | Configure MLflow remote tracking server and model registry |
+| High | Pin exact dependency versions in requirements.txt |
+| Medium | Persist API build artifacts in repository |
+| Medium | Add model version/run ID to API prediction response |
+| Medium | Log reference_date, monotone constraints, and preprocessing pipeline to MLflow |
+| Low | Add random_state to age proxy model in disparate impact |
+| Low | Document age proxy in-sample limitation and dirty state values |
 
 ---
 
