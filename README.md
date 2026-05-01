@@ -4,6 +4,7 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 
 ## Table of Contents
 
+- [Claude Code Skills](#claude-code-skills)
 - [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
 - [1. Exploratory Data Analysis](#1-exploratory-data-analysis)
@@ -13,9 +14,27 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 - [5. Model Evaluation](#5-model-evaluation)
 - [6. Disparate Impact](#6-disparate-impact)
 - [7. API](#7-api)
-- [Claude Code Skills](#claude-code-skills)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
+
+## Claude Code Skills
+
+This project uses Claude Code skills to automate each step of the modeling workflow. Skills can be invoked independently or run sequentially with `/run-all`.
+
+| Skill | Description |
+|-------|-------------|
+| `/create-folder-structure` | Scaffold project directories and template notebooks |
+| `/eda` | Populate EDA notebook with top-down analysis |
+| `/data-split` | Populate data split notebook with out-of-time splitting |
+| `/preprocessing` | Populate preprocessing notebook with sklearn pipeline |
+| `/model` | Populate model notebook with Bayesian tuning and XGBoost |
+| `/model-eval` | Populate model evaluation notebook with metrics and plots |
+| `/disparate-impact` | Populate disparate impact notebook with fair lending analysis |
+| `/deployment` | Populate API notebook with FastAPI, Dockerfile, and Docker build |
+| `/documentation` | Generate comprehensive README with all plots and tables |
+| `/run-all` | Execute all skills sequentially |
+
+---
 
 ## Project Overview
 
@@ -407,25 +426,6 @@ curl -X POST http://localhost:8080/predict \
 ### Logging
 
 The API includes structured logging with the format `timestamp | level | message`. Each prediction request logs the loan_id, predicted probability of default, and elapsed time for monitoring and auditability.
-
----
-
-## Claude Code Skills
-
-This project uses Claude Code skills to automate each step of the modeling workflow. Skills can be invoked independently or run sequentially with `/run-all`.
-
-| Skill | Description |
-|-------|-------------|
-| `/create-folder-structure` | Scaffold project directories and template notebooks |
-| `/eda` | Populate EDA notebook with top-down analysis |
-| `/data-split` | Populate data split notebook with out-of-time splitting |
-| `/preprocessing` | Populate preprocessing notebook with sklearn pipeline |
-| `/model` | Populate model notebook with Bayesian tuning and XGBoost |
-| `/model-eval` | Populate model evaluation notebook with metrics and plots |
-| `/disparate-impact` | Populate disparate impact notebook with fair lending analysis |
-| `/deployment` | Populate API notebook with FastAPI, Dockerfile, and Docker build |
-| `/documentation` | Generate comprehensive README with all plots and tables |
-| `/run-all` | Execute all skills sequentially |
 
 ---
 
