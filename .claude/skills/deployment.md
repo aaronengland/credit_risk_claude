@@ -49,8 +49,14 @@ Markdown: explains the FastAPI application structure.
   - Logs health check requests
   - Load preprocessing pipeline, XGBoost model, feature column list at startup
   - Pydantic `LoanApplication` request schema matching raw input columns (Optional for nullable fields)
+  - Input validation using Pydantic `Field` and `field_validator`:
+    - `loan_amount`: `Field(gt=0)`
+    - `term_months`: `Field(ge=0)`
+    - `bureau_score`: optional validator checking 300-900 range if provided
+    - `utilization`: optional validator checking 0-2.0 range if provided
+    - `stated_income`: optional validator checking gt=0 if provided
   - Pydantic `PredictionResponse` with `flt_probability_of_default`
-  - `/health` GET endpoint
+  - `/health` GET readiness endpoint that runs a dummy prediction through the model to verify artifacts are loaded; returns `{'status': 'unhealthy', 'error': ...}` on failure
   - `/predict` POST endpoint: converts to DataFrame, runs pipeline.transform, selects model features, returns predicted PD
 
 #### Dockerfile

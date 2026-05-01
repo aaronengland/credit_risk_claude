@@ -43,7 +43,7 @@ One function per code cell, ordered to match execution order.
 
 1. Custom transformer class `FeatureEngineer(BaseEstimator, TransformerMixin)`:
    - Engineers `int_age` from `dob` (years between dob and reference date). Does NOT drop `dob`.
-   - Stores `self.reference_date_ = pd.Timestamp.now()` during `fit()` so that age calculation is reproducible and consistent between training and serving, preventing train-serve skew over time.
+   - Stores the reference date during `fit()` using `self.reference_date_ = pd.to_datetime(X['origination_date']).max()` if `origination_date` is in the columns, otherwise falls back to `pd.Timestamp.now()`. Using the max origination date from training data ensures age calculation is deterministic, reproducible, and consistent between training and serving, preventing train-serve skew over time.
    - Engineers `flt_payment_to_income` = `loan_amount / stated_income`
    - Does NOT drop any columns. Column exclusion is handled in 04_model.
    - Returns a DataFrame

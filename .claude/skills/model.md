@@ -12,7 +12,7 @@ Populate the `04_model/notebook.ipynb` with XGBoost model training using Bayesia
 
 - Load preprocessed data from `03_preprocessing/` in S3.
 - Exclude non-feature columns (IDs, leaky variables, dates, compliance-sensitive) here, not in preprocessing.
-- Use Optuna for Bayesian hyperparameter tuning with `show_progress_bar=True`.
+- Use Optuna for Bayesian hyperparameter tuning with `show_progress_bar=True`. Set random seeds for reproducibility: `seed=42` for the Optuna TPE sampler (`optuna.samplers.TPESampler(seed=42)`) and `random_state=42` for all XGBoost models (in the objective function, tuning model, and final model).
 - Use validation data for early stopping.
 - Apply monotone constraints for regulatory directional consistency.
 - Do NOT use `scale_pos_weight` or sample weights. Train on natural class distribution.
@@ -38,6 +38,8 @@ from sklearn.metrics import roc_auc_score
 import shap
 import optuna
 import xgboost as xgb
+import mlflow
+import mlflow.xgboost
 ```
 
 ### Functions Cell
@@ -106,3 +108,11 @@ Markdown: explains that the final model is trained on combined train + validatio
 - Save model to `output/xgboost_model.joblib`
 - Save best hyperparameters to `output/best_params.csv`
 - Save feature columns to `output/feature_cols.joblib`
+
+#### Log to MLflow
+- Set experiment to `credit_risk_model`, start run named `xgboost_credit_risk`
+- Log hyperparameters: all best params from Optuna study, plus `n_estimators`, `n_features`, `train_valid_rows`
+- Log test set metrics: `test_auc`, `test_brier`, `test_gini`
+- Log the XGBoost model via `mlflow.xgboost.log_model`
+- Log artifacts: `xgboost_model.joblib`, `best_params.csv`, `feature_cols.joblib`
+- Print the MLflow run ID and experiment name

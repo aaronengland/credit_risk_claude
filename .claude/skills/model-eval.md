@@ -46,7 +46,7 @@ One function per code cell, ordered to match execution order.
 
 7. `plot_shap_pdp(model, arr_X, list_feature_cols, str_filename)` - Grid of SHAP partial dependence scatter plots (feature value vs SHAP value) for each feature. 3-column layout. Horizontal line at y=0.
 
-8. `plot_decile_analysis(arr_y_true, arr_y_pred, str_filename)` - Bins predictions into 10 deciles using `pd.qcut`. For each decile computes predicted PD range, count, actual default rate, and cumulative capture rate. Prints a summary DataFrame table. Plots a bar chart of actual default rate by decile with PD range as x-labels. Steelblue bars with black edgecolor, annotated with actual default rate. Uses `rotation=45` for x-labels.
+8. `plot_decile_analysis(arr_y_true, arr_y_pred, str_filename)` - Bins predictions into 10 deciles using `pd.qcut`, with decile 1 = highest risk (highest predicted PD) and decile 10 = lowest risk (standard credit risk convention). For each decile computes predicted PD range, count, actual default rate, and cumulative capture rate (accumulating from the highest-risk decile downward so that "top N deciles capture X% of defaults"). Prints a summary DataFrame table. Plots a bar chart of actual default rate by decile with PD range as x-labels. Steelblue bars with black edgecolor, annotated with actual default rate. Uses `rotation=45` for x-labels.
 
 9. `plot_threshold_analysis(arr_y_true, arr_y_pred, str_filename)` - Evaluates thresholds at 0.10, 0.15, 0.20, 0.25, 0.30, 0.50. For each threshold computes precision, recall, F1, and approval rate (proportion below threshold). Prints a summary DataFrame table. Plots a multi-line chart with precision (steelblue), recall (salmon), F1 (seagreen), and approval rate (gray dashed). Legend at lower right.
 
