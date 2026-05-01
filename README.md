@@ -365,18 +365,36 @@ No sample weights or `scale_pos_weight` are used. The model is trained on the na
 
 After tuning, the final model is trained on the combined training and validation data to maximize the amount of data available for learning. The optimal number of boosting rounds (`n_estimators`) is set to `best_iteration` from the tuning phase, which was determined via early stopping on the validation set. Since the number of rounds is now fixed, no early stopping or holdout set is needed for the final fit. The test set remains completely untouched.
 
+### Hyperparameter Search Space
+
+The following search space was explored during Bayesian optimization:
+
+| Parameter | Range | Scale | Purpose |
+|-----------|-------|-------|---------|
+| max_depth | 3 - 10 | linear | Controls tree complexity; deeper trees can capture more interactions but risk overfitting |
+| learning_rate | 0.01 - 0.3 | log | Step size shrinkage; lower values require more trees but generalize better |
+| min_child_weight | 1 - 10 | linear | Minimum sum of instance weight in a leaf; higher values constrain tree growth |
+| subsample | 0.5 - 1.0 | linear | Row sampling per tree; reduces variance and prevents overfitting |
+| colsample_bytree | 0.5 - 1.0 | linear | Feature sampling per tree; adds regularization through feature diversity |
+| gamma | 0.0 - 5.0 | linear | Minimum loss reduction for a split; acts as a pruning threshold |
+| reg_alpha | 1e-8 - 10.0 | log | L1 regularization; encourages sparsity in feature weights |
+| reg_lambda | 1e-8 - 10.0 | log | L2 regularization; penalizes large feature weights to prevent overfitting |
+
 ### Best Hyperparameters
 
 | Parameter | Value |
 |-----------|-------|
-| max_depth | 3 |
-| learning_rate | 0.123 |
-| min_child_weight | 4 |
-| subsample | 0.732 |
-| colsample_bytree | 0.987 |
-| gamma | 4.859 |
-| reg_alpha | 1.14e-08 |
-| reg_lambda | 1.88e-07 |
+| max_depth | 8 |
+| learning_rate | 0.044 |
+| min_child_weight | 7 |
+| subsample | 0.868 |
+| colsample_bytree | 0.683 |
+| gamma | 4.003 |
+| reg_alpha | 3.43e-08 |
+| reg_lambda | 1.50e-08 |
+| n_estimators (best_iteration) | 191 |
+
+The tuning converged on a moderately deep tree (max_depth=8) with a low learning rate (0.044), requiring 191 boosting rounds. The high gamma (4.003) and min_child_weight (7) provide strong regularization through pruning and leaf constraints, while subsample (0.868) and colsample_bytree (0.683) add stochastic regularization. The L1/L2 penalties (reg_alpha, reg_lambda) settled near their lower bounds, indicating the tree-structural regularization was sufficient to control overfitting.
 
 ### Optimization History
 
