@@ -417,6 +417,53 @@ The following search space was explored during Bayesian optimization:
 
 The tuning converged on a shallow tree (max_depth=3) with a low learning rate (0.032), requiring 321 boosting rounds. The shallow depth provides strong regularization by limiting interaction complexity, while gamma (2.665) adds pruning. Moderate subsampling (0.789) and feature sampling (0.742) add stochastic regularization. The L1/L2 penalties settled near their lower bounds, indicating tree-structural regularization was sufficient.
 
+### MLflow Experiment Tracking
+
+All model training runs are logged to MLflow under the `credit_risk_model` experiment for traceability and auditability.
+
+**Latest Run:**
+
+| Field | Value |
+|-------|-------|
+| Run ID | `a78ab997f7cf43499a9ebaecae3aa04d` |
+| Run Name | `xgboost_credit_risk` |
+| Status | FINISHED |
+
+**Logged Parameters:**
+
+| Parameter | Value |
+|-----------|-------|
+| max_depth | 3 |
+| learning_rate | 0.032 |
+| min_child_weight | 3 |
+| subsample | 0.789 |
+| colsample_bytree | 0.742 |
+| gamma | 2.665 |
+| reg_alpha | 1.23e-04 |
+| reg_lambda | 9.36e-07 |
+| n_estimators | 321 |
+| n_features | 12 |
+| train_valid_rows | 21,511 |
+
+**Logged Metrics:**
+
+| Metric | Value |
+|--------|-------|
+| test_auc | 0.8032 |
+| test_gini | 0.6065 |
+| test_brier | 0.1196 |
+
+**Logged Artifacts:**
+
+| Artifact | Description |
+|----------|-------------|
+| `xgboost_model.joblib` | Serialized final XGBoost model |
+| `best_params.csv` | Best hyperparameters from Optuna |
+| `feature_cols.joblib` | Ordered list of feature column names |
+| `xgboost_model/` | MLflow sklearn-flavored model (for MLflow serving) |
+
+Future runs will also log `reference_date`, `monotone_constraints`, `excluded_columns`, and the preprocessing pipeline artifact for full reproducibility.
+
 ### Optimization History
 
 ![Optimization History](04_model/output/optimization_history.png)
