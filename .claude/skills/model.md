@@ -113,9 +113,8 @@ Markdown: explains that the final model is trained on combined train + validatio
 #### Log to MLflow
 - Set experiment to `credit_risk_model`, start run named `xgboost_credit_risk`
 - Log hyperparameters: all best params from Optuna study, plus `n_estimators`, `n_features`, `train_valid_rows`
-- Load the preprocessing pipeline from `../03_preprocessing/output/preprocessing_pipeline.joblib` and log `reference_date` extracted from `preprocessing_pipeline.named_steps['feature_engineer'].reference_date_`
-- Log `monotone_constraints` (stringified `tpl_monotone_constraints`) and `excluded_columns` (stringified `list_exclude_cols`)
+- Log `random_state`, `monotone_constraints` (stringified `tpl_monotone_constraints`), and `excluded_columns` (stringified `list_exclude_cols`)
 - Log test set metrics: `test_auc`, `test_brier`, `test_gini`
 - Log the XGBoost model via `mlflow.sklearn.log_model` (sklearn flavor for XGBClassifier compatibility)
-- Log artifacts: `xgboost_model.joblib`, `best_params.csv`, `feature_cols.joblib`, and the preprocessing pipeline (`../03_preprocessing/output/preprocessing_pipeline.joblib`)
+- Log artifacts: `xgboost_model.joblib`, `best_params.csv`, `feature_cols.joblib`
 - Print the MLflow run ID and experiment name
