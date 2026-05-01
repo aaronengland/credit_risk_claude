@@ -86,6 +86,7 @@ This project uses Claude Code skills to automate each step of the modeling workf
 | `/monitoring` | Post-Deployment | Populate monitoring notebook with PSI, CSI, target drift, AUC/Brier trends |
 | `/champion-challenger` | Post-Deployment | Populate champion-challenger notebook with side-by-side model comparison |
 | `/documentation` | Both | Generate comprehensive README with all plots and tables |
+| `/review` | Both | Review notebooks, update skills/README, convene advisory panel |
 | `/run-all` | Both | Execute all skills sequentially |
 
 ### Run the Full Pipeline

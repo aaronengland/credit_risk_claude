@@ -25,6 +25,7 @@ This repository is a reusable framework for building credit risk models using Cl
 | `/champion-challenger` | Side-by-side model comparison with automated recommendation |
 | `/deployment` | FastAPI + Docker with logging |
 | `/documentation` | Generate comprehensive README with all plots and tables |
+| `/review` | Review notebooks, update skills/README, convene advisory panel |
 | `/run-all` | Execute all skills sequentially |
 
 ## Notebook Conventions
