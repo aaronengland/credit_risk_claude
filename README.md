@@ -425,7 +425,7 @@ All model training runs are logged to MLflow under the `credit_risk_model` exper
 
 | Field | Value |
 |-------|-------|
-| Run ID | `a78ab997f7cf43499a9ebaecae3aa04d` |
+| Run ID | `1c722586e28e46c284dbd6d0af8fc901` |
 | Run Name | `xgboost_credit_risk` |
 | Status | FINISHED |
 
@@ -444,6 +444,9 @@ All model training runs are logged to MLflow under the `credit_risk_model` exper
 | n_estimators | 321 |
 | n_features | 12 |
 | train_valid_rows | 21,511 |
+| random_state | 42 |
+| monotone_constraints | (1, 1, -1, -1, 0, -1, 0, 1, 1, 1, 1, 0) |
+| excluded_columns | loan_id, origination_date, dob, charged_off_amount, paid_interest_amount, apr, flt_payment_to_income, int_age, state, default_12m |
 
 **Logged Metrics:**
 
@@ -461,8 +464,6 @@ All model training runs are logged to MLflow under the `credit_risk_model` exper
 | `best_params.csv` | Best hyperparameters from Optuna |
 | `feature_cols.joblib` | Ordered list of feature column names |
 | `xgboost_model/` | MLflow sklearn-flavored model (for MLflow serving) |
-
-Future runs will also log `reference_date`, `monotone_constraints`, `excluded_columns`, and the preprocessing pipeline artifact for full reproducibility.
 
 ### Optimization History
 
@@ -581,6 +582,21 @@ The optimal cutoff depends on the cost of false positives (declining good borrow
 | 0.50 | 59.7% | 26.1% | 36.3% | 92.0% |
 
 At a 0.25 threshold, the model achieves the best F1 balance (51.2%) with a 73.4% approval rate. Lower thresholds maximize default detection (recall) at the cost of approving fewer borrowers, while higher thresholds maximize approval rate at the cost of missing more defaults.
+
+### Adverse Action Reason Codes
+
+![Reason Codes](05_model_eval/output/reason_codes_sample.png)
+
+Under ECOA and CFPB guidance, lenders must provide specific, accurate reasons when taking adverse action on a credit application. SHAP values identify the top features pushing each applicant's prediction toward default, which are then mapped to consumer-facing reason descriptions. The top 4 reasons are generated per applicant.
+
+Common adverse action reasons across all test set applicants (by frequency):
+- Credit score is too low
+- Credit utilization is too high
+- Insufficient length of employment
+- Loan amount is too high
+- Too many recent credit inquiries
+
+This ensures regulatory compliance for credit decisioning and provides transparent, explainable denial reasons.
 
 ---
 
