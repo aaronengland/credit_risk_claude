@@ -21,8 +21,10 @@ Run each of the following skills in order. Each skill populates the notebook for
 5. `/model` - populate model training notebook
 6. `/model-eval` - populate model evaluation notebook
 7. `/disparate-impact` - populate disparate impact notebook
-8. `/deployment` - populate API notebook
-9. `/documentation` - generate comprehensive README
+8. `/monitoring` - populate post-deployment monitoring notebook
+9. `/champion-challenger` - populate champion vs challenger comparison notebook
+10. `/deployment` - populate API notebook
+11. `/documentation` - generate comprehensive README
 
 ### Notes
 

@@ -30,6 +30,8 @@ This project uses Claude Code skills to automate each step of the modeling workf
 | `/model` | Populate model notebook with Bayesian tuning and XGBoost |
 | `/model-eval` | Populate model evaluation notebook with metrics and plots |
 | `/disparate-impact` | Populate disparate impact notebook with fair lending analysis |
+| `/monitoring` | Populate monitoring notebook with PSI, CSI, target drift, AUC/Brier trends |
+| `/champion-challenger` | Populate champion-challenger notebook with side-by-side model comparison |
 | `/deployment` | Populate API notebook with FastAPI, Dockerfile, and Docker build |
 | `/documentation` | Generate comprehensive README with all plots and tables |
 | `/run-all` | Execute all skills sequentially |
@@ -481,6 +483,12 @@ credit_risk_claude/
 ├── 06_disparate_impact/     # Fair lending analysis
 │   ├── notebook.ipynb
 │   └── output/              # Disparate impact metrics and plots
+├── 07_monitoring/           # Post-deployment model monitoring
+│   ├── notebook.ipynb
+│   └── output/              # PSI, CSI, drift plots
+├── 08_champion_challenger/  # Champion vs challenger comparison
+│   ├── notebook.ipynb
+│   └── output/              # Comparison metrics and plots
 ├── api/                     # Model serving
 │   └── notebook.ipynb       # Creates all API artifacts via %%writefile
 ├── .claude/

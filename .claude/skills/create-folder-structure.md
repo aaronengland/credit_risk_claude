@@ -17,9 +17,11 @@ Create the complete folder structure for the credit risk modeling project. This 
    - `04_model/`
    - `05_model_eval/`
    - `06_disparate_impact/`
+   - `07_monitoring/`
+   - `08_champion_challenger/`
    - `api/`
 
-2. In each directory (01 through 06), create a `notebook.ipynb` file following the template structure from the root `notebook.ipynb`:
+2. In each directory (01 through 08), create a `notebook.ipynb` file following the template structure from the root `notebook.ipynb`:
    - Cell 1 (code): imports - only `import os` as the starting point
    - Cell 2 (markdown): `#### Functions`
    - Cell 3 (code): empty (placeholder for function definitions)

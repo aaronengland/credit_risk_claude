@@ -21,6 +21,8 @@ This repository is a reusable framework for building credit risk models using Cl
 | `/model` | XGBoost with Bayesian tuning (Optuna), monotone constraints, early stopping |
 | `/model-eval` | AUC, Gini, KS, PR AUC, Brier, calibration, KDE, confusion matrix, SHAP PDP |
 | `/disparate-impact` | Fair lending analysis with proxy model and SHAP comparison |
+| `/monitoring` | Post-deployment monitoring: PSI, CSI, target drift, AUC/Brier trends |
+| `/champion-challenger` | Side-by-side model comparison with automated recommendation |
 | `/deployment` | FastAPI + Docker with logging |
 | `/documentation` | Generate comprehensive README with all plots and tables |
 | `/run-all` | Execute all skills sequentially |
