@@ -1,6 +1,9 @@
 <p align="center">
   <img src="img/Claude_AI_logo.svg.png" alt="Claude Logo" width="200"/>
 </p>
+
+---
+
 <p align="center">
   <img src="img/Python_logo_and_wordmark.svg.png" alt="Python" height="40"/>
   &nbsp;&nbsp;&nbsp;
@@ -14,6 +17,8 @@
   &nbsp;&nbsp;&nbsp;
   <img src="img/Docker_Logo.svg.png" alt="Docker" height="40"/>
 </p>
+
+---
 
 # Credit Risk Model
 
