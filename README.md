@@ -471,11 +471,11 @@ Under ECOA (Equal Credit Opportunity Act), age is a protected class. Although `i
 
 The median predicted probability is nearly identical between groups (0.1323 vs 0.1359), suggesting no systematic bias in predictions. The AUC difference is partly attributable to the small sample size of the 60+ group (n=107).
 
-### Median Predicted PD vs Actual Default Rate by Age Group
+### Predicted PD vs Actual Default Rate by Age Group
 
 ![Pred vs Actual by Age](06_disparate_impact/output/pred_vs_actual_by_age.png)
 
-This grouped bar chart shows the median predicted probability of default alongside the actual default rate for each age group. Both metrics are similar across groups, indicating the model is not systematically over- or under-predicting for either age group.
+This grouped bar chart shows the median predicted PD, mean predicted PD, and actual default rate for each age group. All three metrics are similar across groups, indicating the model is not systematically over- or under-predicting for either age group. The mean predicted PD closely tracks the actual default rate for both groups, confirming calibration holds across age segments.
 
 ### AUC by Age Group
 

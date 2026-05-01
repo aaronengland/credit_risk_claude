@@ -39,7 +39,7 @@ One function per code cell, ordered to match execution order.
 
 3. `plot_metric_comparison(df_metrics, str_metric, str_title, str_filename)` - Bar chart comparing a single metric across groups with values annotated. Y-axis padded.
 
-4. `plot_pred_vs_actual_by_group(df_metrics, str_filename='output/pred_vs_actual_by_age.png')` - Grouped bar chart showing median predicted PD (steelblue) and actual default rate (salmon) side by side per age group with values annotated. Y-axis padded.
+4. `plot_pred_vs_actual_by_group(df_metrics, str_filename='output/pred_vs_actual_by_age.png')` - Grouped bar chart showing median predicted PD (steelblue), mean predicted PD (seagreen), and actual default rate (salmon) side by side per age group with values annotated. Y-axis padded.
 
 5. `plot_age_vs_credit_importance(model_age, model_credit, arr_X_age, arr_X_credit, list_cols, str_filename)` - Grouped horizontal bar chart comparing SHAP importance from the age proxy model (salmon) vs the credit risk model (steelblue). Both normalized to 0-1, sorted by age SHAP. Highlights features that are important for both predicting age and default.
 
@@ -73,8 +73,8 @@ Markdown: ECOA context, int_age excluded from model features but must verify no 
 Markdown: explains comparison of metrics between groups.
 - `compute_metrics_by_group`, save to `output/disparate_impact_metrics.csv`
 
-#### Median Predicted PD vs Actual Default Rate by Age Group
-- `plot_pred_vs_actual_by_group(df_di_metrics)` - single grouped bar chart comparing median predicted PD and actual default rate side by side
+#### Predicted PD vs Actual Default Rate by Age Group
+- `plot_pred_vs_actual_by_group(df_di_metrics)` - single grouped bar chart comparing median predicted PD, mean predicted PD, and actual default rate side by side
 
 #### AUC by Age Group
 - `plot_metric_comparison` for flt_auc
