@@ -1,19 +1,27 @@
+<p align="center">
+  <img src="img/Claude_AI_logo.svg.png" alt="Claude Logo" width="200"/>
+</p>
+
 # Credit Risk Model
 
-A credit risk modeling project built with Claude Code, demonstrating an end-to-end machine learning workflow from exploratory data analysis through model deployment.
+A credit risk modeling project built with Claude Code, demonstrating an end-to-end machine learning workflow from exploratory data analysis through post-deployment monitoring.
 
 ## Table of Contents
 
 - [Claude Code Skills](#claude-code-skills)
 - [Project Overview](#project-overview)
 - [Getting Started](#getting-started)
-- [1. Exploratory Data Analysis](#1-exploratory-data-analysis)
-- [2. Data Split](#2-data-split)
-- [3. Preprocessing](#3-preprocessing)
-- [4. Model](#4-model)
-- [5. Model Evaluation](#5-model-evaluation)
-- [6. Disparate Impact](#6-disparate-impact)
-- [7. API](#7-api)
+- **Pre-Deployment**
+  - [1. Exploratory Data Analysis](#1-exploratory-data-analysis)
+  - [2. Data Split](#2-data-split)
+  - [3. Preprocessing](#3-preprocessing)
+  - [4. Model](#4-model)
+  - [5. Model Evaluation](#5-model-evaluation)
+  - [6. Disparate Impact](#6-disparate-impact)
+  - [7. API](#7-api)
+- **Post-Deployment**
+  - [8. Monitoring](#8-monitoring)
+  - [9. Champion-Challenger](#9-champion-challenger)
 - [Tech Stack](#tech-stack)
 - [Folder Structure](#folder-structure)
 
@@ -21,20 +29,20 @@ A credit risk modeling project built with Claude Code, demonstrating an end-to-e
 
 This project uses Claude Code skills to automate each step of the modeling workflow. Skills can be invoked independently or run sequentially.
 
-| Skill | Description |
-|-------|-------------|
-| `/create-folder-structure` | Scaffold project directories and template notebooks |
-| `/eda` | Populate EDA notebook with top-down analysis |
-| `/data-split` | Populate data split notebook with out-of-time splitting |
-| `/preprocessing` | Populate preprocessing notebook with sklearn pipeline |
-| `/model` | Populate model notebook with Bayesian tuning and XGBoost |
-| `/model-eval` | Populate model evaluation notebook with metrics and plots |
-| `/disparate-impact` | Populate disparate impact notebook with fair lending analysis |
-| `/monitoring` | Populate monitoring notebook with PSI, CSI, target drift, AUC/Brier trends |
-| `/champion-challenger` | Populate champion-challenger notebook with side-by-side model comparison |
-| `/deployment` | Populate API notebook with FastAPI, Dockerfile, and Docker build |
-| `/documentation` | Generate comprehensive README with all plots and tables |
-| `/run-all` | Execute all skills sequentially |
+| Skill | Phase | Description |
+|-------|-------|-------------|
+| `/create-folder-structure` | Setup | Scaffold project directories and template notebooks |
+| `/eda` | Pre-Deployment | Populate EDA notebook with top-down analysis |
+| `/data-split` | Pre-Deployment | Populate data split notebook with out-of-time splitting |
+| `/preprocessing` | Pre-Deployment | Populate preprocessing notebook with sklearn pipeline |
+| `/model` | Pre-Deployment | Populate model notebook with Bayesian tuning and XGBoost |
+| `/model-eval` | Pre-Deployment | Populate model evaluation notebook with metrics and plots |
+| `/disparate-impact` | Pre-Deployment | Populate disparate impact notebook with fair lending analysis |
+| `/deployment` | Pre-Deployment | Populate API notebook with FastAPI, Dockerfile, and Docker build |
+| `/monitoring` | Post-Deployment | Populate monitoring notebook with PSI, CSI, target drift, AUC/Brier trends |
+| `/champion-challenger` | Post-Deployment | Populate champion-challenger notebook with side-by-side model comparison |
+| `/documentation` | Both | Generate comprehensive README with all plots and tables |
+| `/run-all` | Both | Execute all skills sequentially |
 
 ### Run the Full Pipeline
 
@@ -448,6 +456,121 @@ curl -X POST http://localhost:8080/predict \
 ### Logging
 
 The API includes structured logging with the format `timestamp | level | message`. Each prediction request logs the loan_id, predicted probability of default, and elapsed time for monitoring and auditability.
+
+---
+
+## 8. Monitoring
+
+Post-deployment monitoring tracks model performance and population stability over time. The training data serves as the baseline (development) population, and all time-series plots include vertical lines marking where training ends (black) and where validation ends (gray), providing full visibility into performance across the data history.
+
+### Monitoring Summary
+
+| Metric | Value |
+|--------|-------|
+| Overall PSI | 0.0011 (no significant shift) |
+| Baseline Median PD | 0.1286 |
+| Production Median PD | 0.1293 |
+| Baseline Target Mean | 18.98% |
+| Production Target Mean | 18.25% |
+| Features with Moderate CSI | 0 |
+| Features with Significant CSI | 0 |
+
+### PSI Over Time
+
+![PSI Trend](07_monitoring/output/psi_trend.png)
+
+PSI measures how much the distribution of predicted probabilities has shifted from the development population. Training months (left of black line) serve as a control and should show near-zero PSI. An overall PSI of 0.0011 indicates no meaningful population shift.
+
+### CSI by Feature
+
+![CSI by Feature](07_monitoring/output/csi_by_feature.png)
+
+CSI applies the same stability calculation to each individual feature. All features show CSI well below 0.10, indicating no feature-level distributional drift. Features are color-coded: steelblue (stable), orange (moderate), red (significant).
+
+| Feature | CSI |
+|---------|-----|
+| utilization | 0.0044 |
+| employment_length_years | 0.0039 |
+| stated_income | 0.0032 |
+| channel | 0.0031 |
+| inquiries_6m | 0.0014 |
+| bureau_score | 0.0012 |
+| loan_amount | 0.0012 |
+| open_trades | 0.0010 |
+| term_months | 0.0007 |
+| public_records | 0.0000 |
+| delinq_12m | 0.0000 |
+| has_prior_loans_with_us | 0.0000 |
+
+### Target Drift Over Time
+
+![Target Drift Over Time](07_monitoring/output/target_drift_over_time.png)
+
+Comparing actual default rates against mean predicted PD over time. The two lines tracking closely indicates the model's calibration is holding. Divergence would signal calibration degradation.
+
+### AUC Over Time
+
+![AUC Over Time](07_monitoring/output/auc_over_time.png)
+
+Model discrimination tracked monthly. A declining AUC in post-deployment periods would indicate the model's ability to rank-order risk is degrading.
+
+### Calibration Over Time
+
+![Calibration Over Time](07_monitoring/output/calibration_over_time.png)
+
+Brier score tracked monthly. An increasing Brier score in post-deployment periods would indicate calibration degradation.
+
+### KDE of Predictions Over Time
+
+![KDE Over Time](07_monitoring/output/kde_over_time.png)
+
+Quarterly prediction distributions with median in legend. Stable, overlapping distributions confirm the model is behaving consistently over time.
+
+---
+
+## 9. Champion-Challenger
+
+The champion-challenger framework compares the current production model against a candidate replacement. Both models are evaluated on the same out-of-time test set to ensure a fair comparison.
+
+- **Champion:** tuned XGBoost with monotone constraints (current production model)
+- **Challenger:** untuned SVM with RBF kernel + StandardScaler (baseline comparison)
+
+### Metrics Comparison
+
+| Model | AUC | Gini | KS | Brier | Median Pred |
+|-------|-----|------|-----|-------|-------------|
+| Champion (XGBoost) | 0.8016 | 0.6032 | 0.4648 | 0.1200 | 0.1293 |
+| Challenger (SVM) | 0.7480 | 0.4961 | 0.4462 | 0.1270 | 0.1380 |
+
+The champion outperforms the challenger across all metrics: better discrimination (AUC, Gini, KS) and better calibration (Brier).
+
+### AUC Comparison
+
+![AUC Comparison](08_champion_challenger/output/auc_comparison.png)
+
+### Gini Comparison
+
+![Gini Comparison](08_champion_challenger/output/gini_comparison.png)
+
+### KS Comparison
+
+![KS Comparison](08_champion_challenger/output/ks_comparison.png)
+
+### ROC Comparison
+
+![ROC Comparison](08_champion_challenger/output/roc_comparison.png)
+
+### Calibration Comparison
+
+![Calibration Comparison](08_champion_challenger/output/calibration_comparison.png)
+
+### KDE Comparison
+
+![KDE Comparison](08_champion_challenger/output/kde_comparison.png)
+
+### Recommendation
+
+The challenger (SVM) does not improve over the champion (XGBoost) on either discrimination or calibration. **Recommendation: retain current production model.**
 
 ---
 
